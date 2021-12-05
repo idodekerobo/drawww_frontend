@@ -1,0 +1,74 @@
+.container {
+   height: 100vh;
+   min-height: 100vh;
+   width: 100vw;
+   min-width: 100vw;
+   padding: auto 10px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   background-color: lightgray;
+}
+.skipButtonContainer {
+   position: absolute;
+   top: 20px;
+   right: 20px;
+   font-size: 20px;
+   font-weight: 300;
+   text-transform: uppercase;
+   color: black;
+   border: 1px solid black;
+   padding: 10px;
+}
+.skipButtonContainer:hover {
+   background-color: black;
+   color: white;
+   border: 1px solid red;
+}
+.skipButtonContainer:active {
+   background-color: red;
+   border: 1px solid black;
+}
+.signUpForm {
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 40px;
+}
+.signUpButton {
+   height: 70px;
+   font-weight: 600;
+}
+.imgContainer {
+   margin-top: 50px;
+   margin-bottom: 125px;
+   max-width: 100%;
+}
+img {
+   display: block;
+   max-width:350px;
+   max-height:400px;
+   width: auto;
+   height: auto;
+ }
+.rotate {
+   animation: rotation 10s;
+}
+@keyframes rotation {
+   /* from {
+      transform: rotate(0deg);
+   } to {
+      transform: rotate(359deg);
+   } */
+   from {
+      transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+   } to {
+      transform: rotateX(0deg) rotateY(359deg) rotateZ(359deg);
+   }
+}
+.linear {
+   animation-timing-function: linear;
+}
+.infinite {
+   animation-iteration-count: infinite;
+}

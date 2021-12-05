@@ -1,6 +1,6 @@
 // npm
 import { useContext, useState } from 'react';
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
@@ -16,14 +16,15 @@ import Button from '@mui/material/Button';
 import NavigationBar from '../components/NavigationBar';
 
 const WelcomeScreen = () => {
-   const { user, loggedIn } = useContext(AuthContext);
-
+   const { user, loggedIn, loading } = useContext(AuthContext);
+   const history = useHistory();
    const [ name, setName ] = useState('');
    const [ phoneNum, setPhoneNum ] = useState('');
    const [ city, setCity ] = useState('');
    const [ state, setState ] = useState('');
    const [ zipCode, setZipCode ] = useState('');
 
+   // TODO - redirect user after updating
    const onUpdateProfileClick = () => {
       const photoUrlNullPlaceholder = null;
       if (user) {
@@ -32,14 +33,22 @@ const WelcomeScreen = () => {
             name, phoneNum, city, state, zipCode
          }
          updateUserDataOnFirestore(user.uid, userDataObject);
+         // console.log('user updated');
+         alert('Profile has been updated!');
+         history.push(HOME);
+      } else {
+         alert(`Profile wasn't able to update! Please try again later.`);
       }
-      return ( <Redirect to={HOME} /> )
    }
 
-   if (!loggedIn) {
-      return <Redirect to={LOGIN} />
+   if (loading) {
+      return (
+         <div>
+            Loading...
+         </div>
+      )
    }
-   
+   if (loggedIn) {
    return (
       <div>
          <NavigationBar />
@@ -69,5 +78,9 @@ const WelcomeScreen = () => {
 
       </div>
    )
+   }
+   // else {
+      return <Redirect to={LOGIN} />
+   // }
 }
 export default WelcomeScreen;

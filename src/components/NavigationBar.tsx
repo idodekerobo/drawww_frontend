@@ -5,6 +5,9 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { signOutWithFirebase } from '../utils/api';
 
+// styles
+import styles from '../styles/NavigationBar.module.css'
+
 // material ui
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -17,10 +20,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { NavLink } from "react-router-dom";
 
 
-import { HOME, LOGIN, SIGN_UP, ACCOUNT } from '../constants';
+import { HOME, LOGIN, ACCOUNT, ADD_RAFFLE } from '../constants';
 
 const NavigationBar = () => {
-   const { loggedIn, logOutFunction } = useContext(AuthContext);
+   const { user, loggedIn, logOutFunction } = useContext(AuthContext);
 
    const logOut = (): void => {
       logOutFunction()
@@ -31,32 +34,31 @@ const NavigationBar = () => {
       <>
          <CssBaseline />
          <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" color="transparent">
                <Toolbar>
                   <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                     <NavLink to={HOME}>Home</NavLink>
+                     <NavLink className={styles.navLink} to={HOME}>Home</NavLink>
                   </Typography>
 
+                  <Button color="inherit">
+                     <NavLink className={styles.navLink} to={ADD_RAFFLE}>Add Raffle</NavLink>
+                  </Button>
+                  
                   {loggedIn ? 
                      <>
                         <Button color="inherit">
-                           <NavLink to={ACCOUNT}>My Account</NavLink>
+                           {user ? <NavLink className={styles.navLink} to={`${ACCOUNT}/${user.uid}`}>My Account</NavLink> : null}
                         </Button>
-                        <NavLink to={HOME}>
+                        <NavLink className={styles.navLink} to={HOME}>
                            <Button color="inherit" onClick={() => logOut()}>
                               Log Out
                            </Button>
                         </NavLink>
                      </>
                   :
-                     <>
-                        <Button color="inherit">
-                           <NavLink to={SIGN_UP}>Sign Up</NavLink>
-                        </Button>
-                        <Button color="inherit">
-                           <NavLink to={LOGIN}>Login</NavLink>
-                        </Button>
-                     </>
+                     <Button color="inherit">
+                        <NavLink className={styles.navLink} to={LOGIN}>Login</NavLink>
+                     </Button>
                   }
                </Toolbar>
             </AppBar>

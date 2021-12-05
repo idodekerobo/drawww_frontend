@@ -1,0 +1,55 @@
+.contentContainer {
+   margin-top: 40px;
+   width: 100%;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin-bottom: 3px;
+   /* background-color: blanchedalmond; */
+}
+@media screen and (min-width: 415px) {
+   .contentContainer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+   }  
+}
+.mediaContainer {
+   margin-bottom: 20px;
+}
+.infoContainer {
+   display: flex;
+   width: 50%;
+   flex-direction: column;
+   /* align-items: flex-start; */
+   /* background-color: royalblue; */
+}
+.raffleDetailsContainer {
+   width: 100%;
+   text-align: center;
+}
+.numberOfRaffleTicketContainer {
+   display: flex;
+   flex-direction: column;
+   /* justify-content: center; */
+   align-items: center;
+   width: 100%;
+   margin-bottom: 15px;
+}
+.numControlContainer {
+   display: flex;
+   flex-direction: row;
+   align-items: center;
+   margin-bottom: 25px;
+}
+.icon {
+   font-size: 34px;
+   margin-left: 7px;
+   margin-right: 7px;
+}
+.icon:active {
+   color: rgb(206, 4, 4);
+}
+.buyButton {
+   margin-top: -8px;
+}

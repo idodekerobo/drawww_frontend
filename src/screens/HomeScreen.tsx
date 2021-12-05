@@ -1,49 +1,39 @@
 // react
-import { useContext } from 'react';
+import { useState, useEffect } from 'react';
 
-// context
-import { AuthContext } from '../context/AuthContext/AuthContext';
-
-// nav bar
+// components
 import NavigationBar from '../components/NavigationBar';
+import SplashBar from '../components/SplashBar';
+import RaffleCard from '../components/RaffleCard';
+
+// context/api/utils
+import { grabRafflesFromFirestore } from '../utils/api';
+import { IRaffleDataFromFirestoreType } from '../utils/types';
+
+// css styling
+import styles from '../styles/HomeScreen.module.css';
 
 // material ui
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import { CardActionArea } from '@mui/material';
 
 const HomeScreen = () => {
+   const [ raffleData, setRaffleData ] = useState<IRaffleDataFromFirestoreType[]>([])
 
-   const { loggedIn } = useContext(AuthContext);
+   const getRaffleDataFunc = async () => {
+      const getRaffleData = await grabRafflesFromFirestore();
+      setRaffleData(getRaffleData);
+   }
+
+   useEffect(() => {
+      getRaffleDataFunc();
+   }, [ ])
 
    return (
-      <div>
+      <div className={styles.allComponentWrapper}>
          <NavigationBar />
-
-         <Container maxWidth="xl">
-            <h3>{loggedIn ? 'someone is logged in! :)' : 'no one is logged in! :('}</h3>
-            <h3>Available Raffles</h3>
-            <Card sx={{ maxWidth: 345 }}>
-               <CardActionArea>
-                  <CardMedia
-                     component="img"
-                     height="140"
-                     src="https://cdn.shopify.com/s/files/1/0094/2252/files/18_8c636bd6-5f65-418f-95e9-aef1c755ec04.jpg?v=1606259979"
-                     alt="sneaker raffle"
-                  />
-                  <CardContent>
-                     <Typography gutterBottom variant="h5" component="div">
-                        Asics Raffle
-                     </Typography>
-                     <Typography variant="body2" color="text.secondary">
-                        Sneaker raffle by xyz. Price per ticket: $25. Tickets remaining: ???
-                     </Typography>
-                  </CardContent>
-               </CardActionArea>
-            </Card>
+         <SplashBar />
+         <Container className={styles.containerWrapper} maxWidth="xl">
+            {raffleData.map((raffle) =>  <RaffleCard raffle={raffle} key={raffle.id} />) }
          </Container>
       </div>
    )

@@ -1,0 +1,10 @@
+.wrapper {
+   text-decoration: none;
+   /* inside the element is a block but the element itself is an inline */
+   display: inline-block; 
+   margin: 10px;
+   /* margin-bottom: 20px; */
+}
+.boldedFont {
+   font-weight: bold;
+}

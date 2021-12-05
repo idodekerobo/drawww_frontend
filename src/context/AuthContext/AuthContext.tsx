@@ -1,16 +1,12 @@
-import React, { createContext, useState } from 'react';
-import { User } from 'firebase/auth';
-
-interface AuthContextInterface {
-   loggedIn: boolean,
-   user: User | null, 
-   logInFunction: (loggedInUser: User) => void,
-   logOutFunction: () => void,
-   signUpFunction: (loggedInUser: User) => void,
-}
+import React, { createContext, useEffect, useState } from 'react';
+import { firebaseAuth } from '../../utils/firebase';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { IAuthContextInterface } from '../../utils/types';
+import { LocalDining } from '@mui/icons-material';
 
 const initialState = {
    loggedIn: false,
+   loading: true,
    user: null,
    logInFunction: () => console.log('login'),
    logOutFunction: () => console.log('logout'),
@@ -18,13 +14,14 @@ const initialState = {
 }
 
 // create context
-const AuthContext = createContext<AuthContextInterface>(initialState);
+const AuthContext = createContext<IAuthContextInterface>(initialState);
 
 // provider component
-const AuthContextProvider = ( {children }: { children: React.ReactNode}) => {
+const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
 
-   const [ loggedIn, setLoggedIn ] = useState<boolean>(false);
-   const [ user, setUser ] = useState<User | null>(null);
+   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+   const [ loading, setLoading ] = useState<boolean>(true);
+   const [user, setUser] = useState<User | null>(null);
 
    const logInFunction = (loggedInUser: User) => {
       setLoggedIn(true);
@@ -39,9 +36,24 @@ const AuthContextProvider = ( {children }: { children: React.ReactNode}) => {
       setUser(signedUpUser);
    }
 
+   useEffect(() => {
+      const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+         if (user) {
+            setLoading(false);
+            setLoggedIn(true);
+            setUser(user);
+         } else {
+            setLoading(false);
+            setUser(null);
+         }
+      });
+      return unsubscribe;
+   }, [])
+
    return (
       <AuthContext.Provider value={{
          loggedIn: loggedIn,
+         loading: loading,
          user: user,
          logInFunction: logInFunction,
          logOutFunction: logOutFunction,
@@ -53,4 +65,3 @@ const AuthContextProvider = ( {children }: { children: React.ReactNode}) => {
 }
 
 export { AuthContext, AuthContextProvider };
-export type { AuthContextInterface };
