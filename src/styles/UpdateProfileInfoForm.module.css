@@ -1,0 +1,10 @@
+.formContainer {
+   display: flex;
+   flex-direction: column;
+}
+@media screen and (min-width: 415px) {
+   .formContainer {
+      width: 70%;
+      margin: 10px auto;
+   }
+}

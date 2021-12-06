@@ -6,7 +6,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 // custom components
 import NavigationBar from "../components/NavigationBar";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, Redirect } from "react-router-dom";
 
 // styles
 import styles from '../styles/RaffleDetailsScreen.module.css'
@@ -15,7 +15,7 @@ import styles from '../styles/RaffleDetailsScreen.module.css'
 import { TEST_BACKEND_URL, grabOneRaffleFromFirestore, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
 import { IRaffleUrlParams, IRaffleDataFromFirestoreType, IUserOrderObject } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { HOME } from '../constants';
+import { HOME, LOGIN } from '../constants';
 
 // material ui
 import Typography from '@mui/material/Typography';
@@ -68,6 +68,10 @@ const RaffleDetailsScreen = () => {
    const [ openDialog, setDialog ] = useState(false);
 
    const handleClickDialogOpen = () => {
+      if (!user) {
+         history.push(LOGIN);
+         return;
+      }
       setDialog(true);
       setBuyButtonDisabled(true);
    };

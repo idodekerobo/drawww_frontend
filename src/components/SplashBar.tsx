@@ -8,7 +8,7 @@ const SplashBar = () => {
       <>
          <Box className={styles.boxStyling}>
             <Typography variant="h6" component="div" >
-               Available Raffles
+               Available Draws
             </Typography>
          </Box>
       </>

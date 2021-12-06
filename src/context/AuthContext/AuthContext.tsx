@@ -1,8 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { firebaseAuth } from '../../utils/firebase';
-import { User, onAuthStateChanged } from 'firebase/auth';
+import { User, onAuthStateChanged,  } from 'firebase/auth';
 import { IAuthContextInterface } from '../../utils/types';
-import { LocalDining } from '@mui/icons-material';
 
 const initialState = {
    loggedIn: false,
@@ -18,10 +17,9 @@ const AuthContext = createContext<IAuthContextInterface>(initialState);
 
 // provider component
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-
-   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+   const [user, setUser] = useState<User | null>(firebaseAuth.currentUser);
+   const [loggedIn, setLoggedIn] = useState<boolean>(Boolean(firebaseAuth.currentUser));
    const [ loading, setLoading ] = useState<boolean>(true);
-   const [user, setUser] = useState<User | null>(null);
 
    const logInFunction = (loggedInUser: User) => {
       setLoggedIn(true);

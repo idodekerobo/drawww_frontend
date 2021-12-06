@@ -1,0 +1,15 @@
+.containerWrapper {
+   margin: 10px;
+   
+}
+@media screen and (min-width: 415px) {
+   .containerWrapper {
+      width: 70%;
+      margin: 10px auto;
+   }
+}
+.addRaffleFormContainer {
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 10px;
+}

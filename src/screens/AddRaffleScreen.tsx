@@ -1,14 +1,17 @@
 // npm/react
-import { useState, useContext } from 'react';
-import { Redirect, useHistory } from "react-router-dom";
+import React, { useState, useContext } from 'react';
+import { useHistory } from "react-router-dom";
 
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { addRaffleToFirestore } from '../utils/api';
-import { HOME, LOGIN } from '../constants';
+import { HOME } from '../constants';
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
+
+// styles
+import styles from '../styles/AddRaffleScreen.module.css';
 
 // material ui
 import Box from '@mui/material/Box';
@@ -18,7 +21,7 @@ import Button from '@mui/material/Button';
 
 const AddRaffleScreen = () => {
    const history = useHistory();
-   const { loggedIn, user } = useContext(AuthContext);
+   const { user } = useContext(AuthContext);
 
    const [ submitButtonDisabled, setSubmitButtonDisabled ] = useState(false);
 
@@ -30,7 +33,8 @@ const AddRaffleScreen = () => {
    const [ raffleSneakerSize, setRaffleSneakerSize ] = useState('');
    const [ raffleImages, setRaffleImages ] = useState<null | FileList>(null);
 
-   const onSubmitRaffleClick = async () => {
+   const onSubmitRaffleClick = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
       setSubmitButtonDisabled(true);
 
       const numRaffleDuration = Number(raffleDuration);
@@ -58,16 +62,15 @@ const AddRaffleScreen = () => {
 
    }
 
-   if (!loggedIn) {
-      return <Redirect to={LOGIN} />
-   }
-
    return (
       <div>
          <NavigationBar />
-         <h3>new raffles</h3>
-         <Box component="form" sx={{ height: '75vh' }}>
+         <div className={styles.containerWrapper}>
+
+            <h3>Add A New Raffle</h3>
+            <form className={styles.addRaffleFormContainer} onSubmit={onSubmitRaffleClick}>
                <TextField
+                  sx={{ marginBottom: 3 }}
                   required
                   // type="number"
                   id="outlined-required"
@@ -77,6 +80,7 @@ const AddRaffleScreen = () => {
                   onChange={(e) => setRaffleSneakerBrand(e.target.value)}
                />
                <TextField
+                  sx={{ marginBottom: 3 }}
                   required
                   // type="number"
                   id="outlined-required"
@@ -86,6 +90,7 @@ const AddRaffleScreen = () => {
                   onChange={(e) => setRaffleSneakerName(e.target.value)}
                />
                <TextField
+                  sx={{ marginBottom: 3 }}
                   required
                   type="number"
                   id="outlined-required"
@@ -95,6 +100,7 @@ const AddRaffleScreen = () => {
                   onChange={(e) => setRaffleDuration(e.target.value)}
                />
                <TextField
+                  sx={{ marginBottom: 3 }}
                   required
                   type="number"
                   id="outlined-required"
@@ -104,6 +110,7 @@ const AddRaffleScreen = () => {
                   onChange={(e) => setRaffleSneakerSize(e.target.value)}
                />
                <TextField
+                  sx={{ marginBottom: 3 }}
                   required
                   type="number"
                   id="outlined-required"
@@ -113,6 +120,7 @@ const AddRaffleScreen = () => {
                   onChange={(e) => setNumRaffleTickets(e.target.value)}
                />
                <TextField
+                  sx={{ marginBottom: 3 }}
                   required
                   type="number"
                   id="outlined-required"
@@ -128,9 +136,9 @@ const AddRaffleScreen = () => {
                   <input type='file' name="raffle_photos" accept="image/*" multiple onChange={e => setRaffleImages(e.target.files)}/>
                </label>
 
-               <Button onClick={() => onSubmitRaffleClick()} variant="contained" disabled={submitButtonDisabled} >Submit</Button>
-
-            </Box>
+               <Button sx={{ marginTop: 3, marginBottom: 3, fontSize: 20, width: '100%' }} type="submit" variant="contained" disabled={submitButtonDisabled} >Submit</Button>
+            </form>
+         </div>
       </div>
    )
 }

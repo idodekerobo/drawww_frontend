@@ -1,4 +1,4 @@
-import { useEffect, useContext } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from './context/AuthContext/AuthContext';
 // screens
 import HomeScreen from './screens/HomeScreen';
@@ -9,6 +9,8 @@ import AccountScreen from './screens/AccountScreen';
 import AddRaffleScreen from './screens/AddRaffleScreen';
 import RaffleDetailsScreen from './screens/RaffleDetailsScreen'
 import LandingScreen from './screens/LandingScreen';
+import PrivateRouteWrapper from './screens/PrivateRouteWrapper';
+import LoadingScreen from './screens/LoadingScreen';
 
 // react router
 import { Switch, Route } from "react-router-dom";
@@ -31,22 +33,24 @@ const theme = createTheme({
 })
 
 function App() {
-   const { loggedIn, user, loading } = useContext(AuthContext)
-   
-   useEffect(() => {
-      console.log('logged in: ', loggedIn);
-      console.log('user: ', user);
-   }, [ ]);
+   const { loading } = useContext(AuthContext)
+
    if (loading) {
-      return (
-         <div>
-            Loading...
-         </div>
-      )
+      return <LoadingScreen /> 
    }
    return (
       <ThemeProvider theme={theme}>
          <Switch>
+
+            <PrivateRouteWrapper path={`${ACCOUNT}/:accountId`}>
+               <AccountScreen />
+            </PrivateRouteWrapper>
+
+            <Route path={`${RAFFLE}/:raffleId`}>
+               <Elements stripe={stripePromise}>
+                  <RaffleDetailsScreen />
+               </Elements>
+            </Route>
 
             <Route path={LOGIN}>
                <LoginScreen />
@@ -56,23 +60,14 @@ function App() {
                <SignUpScreen />
             </Route>
 
-            <Route path={WELCOME}>
+            <PrivateRouteWrapper path={WELCOME}>
                <WelcomeScreen />
-            </Route>
+            </PrivateRouteWrapper>
 
-            <Route path={`${ACCOUNT}/:accountId`}>
-               <AccountScreen />
-            </Route>
-
-            <Route path={ADD_RAFFLE}>
+            <PrivateRouteWrapper path={ADD_RAFFLE}>
                <AddRaffleScreen />
-            </Route>
+            </PrivateRouteWrapper>
 
-            <Route path={`${RAFFLE}/:raffleId`}>
-               <Elements stripe={stripePromise}>
-                  <RaffleDetailsScreen />
-               </Elements>
-            </Route>
 
             <Route path={HOME}>
                <HomeScreen />

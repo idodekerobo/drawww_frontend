@@ -21,6 +21,5 @@ const firebaseApp = initializeApp(firebaseConfig);
 export default firebaseApp;
 export const firebaseAuth = getAuth();
 export const googleAuthProvider = new GoogleAuthProvider();
-// setPersistence(firebaseAuth, browserSessionPersistence);
 export const firestoreDb = getFirestore();
 export const firebaseStorage = getStorage(firebaseApp);

@@ -1,9 +1,7 @@
 // react 
 import { useContext } from 'react';
-
 // context/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { signOutWithFirebase } from '../utils/api';
 
 // styles
 import styles from '../styles/NavigationBar.module.css'
@@ -23,12 +21,7 @@ import { NavLink } from "react-router-dom";
 import { HOME, LOGIN, ACCOUNT, ADD_RAFFLE } from '../constants';
 
 const NavigationBar = () => {
-   const { user, loggedIn, logOutFunction } = useContext(AuthContext);
-
-   const logOut = (): void => {
-      logOutFunction()
-      signOutWithFirebase();
-   }
+   const { user, loggedIn } = useContext(AuthContext);
 
    return (
       <>
@@ -37,23 +30,18 @@ const NavigationBar = () => {
             <AppBar position="static" color="transparent">
                <Toolbar>
                   <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                     <NavLink className={styles.navLink} to={HOME}>Home</NavLink>
+                     <NavLink className={styles.navLink} to={HOME}>DrawParty</NavLink>
                   </Typography>
 
                   <Button color="inherit">
-                     <NavLink className={styles.navLink} to={ADD_RAFFLE}>Add Raffle</NavLink>
+                     <NavLink className={styles.navLink} to={ADD_RAFFLE}>Add Draw</NavLink>
                   </Button>
                   
                   {loggedIn ? 
                      <>
                         <Button color="inherit">
-                           {user ? <NavLink className={styles.navLink} to={`${ACCOUNT}/${user.uid}`}>My Account</NavLink> : null}
+                           {user ? <NavLink className={styles.navLink} to={`${ACCOUNT}/${user.uid}`}>Account</NavLink> : null}
                         </Button>
-                        <NavLink className={styles.navLink} to={HOME}>
-                           <Button color="inherit" onClick={() => logOut()}>
-                              Log Out
-                           </Button>
-                        </NavLink>
                      </>
                   :
                      <Button color="inherit">

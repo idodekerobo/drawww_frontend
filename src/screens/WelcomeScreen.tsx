@@ -1,86 +1,31 @@
-// npm
-import { useContext, useState } from 'react';
-import { Redirect, useHistory } from "react-router-dom";
+// custom components
+import UpdateProfileInfoForm from '../components/UpdateProfileInfoForm';
 
-// api/utils
-import { AuthContext } from '../context/AuthContext/AuthContext';
-import { updateUserProfileData, updateUserDataOnFirestore } from '../utils/api';
-import { LOGIN, HOME } from '../constants';
+// styles
+import styles from '../styles/WelcomeScreen.module.css'
+
 // material ui
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 
 // nav bar imports
 import NavigationBar from '../components/NavigationBar';
 
 const WelcomeScreen = () => {
-   const { user, loggedIn, loading } = useContext(AuthContext);
-   const history = useHistory();
-   const [ name, setName ] = useState('');
-   const [ phoneNum, setPhoneNum ] = useState('');
-   const [ city, setCity ] = useState('');
-   const [ state, setState ] = useState('');
-   const [ zipCode, setZipCode ] = useState('');
 
-   // TODO - redirect user after updating
-   const onUpdateProfileClick = () => {
-      const photoUrlNullPlaceholder = null;
-      if (user) {
-         updateUserProfileData(user, name, photoUrlNullPlaceholder);
-         const userDataObject = {
-            name, phoneNum, city, state, zipCode
-         }
-         updateUserDataOnFirestore(user.uid, userDataObject);
-         // console.log('user updated');
-         alert('Profile has been updated!');
-         history.push(HOME);
-      } else {
-         alert(`Profile wasn't able to update! Please try again later.`);
-      }
-   }
-
-   if (loading) {
-      return (
-         <div>
-            Loading...
-         </div>
-      )
-   }
-   if (loggedIn) {
    return (
       <div>
          <NavigationBar />
-         <Container maxWidth="xl">
+         <Container className={styles.containerWrapper} maxWidth="xl">
             <h3>Thank you for signing up!</h3>
             <h3>
                Please fill out the below!
             </h3>
 
-            <Box
-               component="form"
-               sx={{
-                  '& > :not(style)': { m: 1, width: '25ch' },
-               }}
-               // noValidate
-               autoComplete="off"
-            >
-               <TextField id="outlined-basic" label="Name" placeholder="Name" variant="outlined" value={name} onChange={(e) => setName(e.target.value)}/>
-               <TextField id="outlined-basic" label="Phone Number" placeholder="Phone Number" type="tel" variant="outlined" value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)} />
-               <TextField id="outlined-basic" label="City" placeholder="City" variant="outlined" value={city} onChange={(e) => setCity(e.target.value)} />
-               <TextField id="outlined-basic" label="State" placeholder="State" variant="outlined" value={state} onChange={(e) => setState(e.target.value)} />
-               <TextField id="outlined-basic" label="Zip Code" placeholder="Zip Code" type="tel" variant="outlined" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
+            <UpdateProfileInfoForm />
 
-               <Button onClick={() => onUpdateProfileClick()} variant="contained">Update Profile</Button>
-            </Box>
          </Container>
 
       </div>
    )
-   }
-   // else {
-      return <Redirect to={LOGIN} />
-   // }
 }
 export default WelcomeScreen;
