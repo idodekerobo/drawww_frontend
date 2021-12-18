@@ -2,13 +2,13 @@
 import React, { useContext, useState } from 'react';
 
 // npm
-import { Redirect, Link } from "react-router-dom";
+import { useHistory, Redirect, Link } from "react-router-dom";
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
 
 // api/utils
-import { WELCOME, LOGIN } from '../constants';
+import { WELCOME, HOME, LOGIN } from '../constants';
 import { signUpWithFirebase, signUpWithGoogleAuth } from '../utils/api';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { useWindowDimensions } from '../utils/hooks';
@@ -22,6 +22,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const SignUpScreen = () => {
+   const history = useHistory();
    const { loggedIn, signUpFunction } = useContext(AuthContext);
    const { windowWidth } = useWindowDimensions();
    const [ email, setEmail ] = useState<string>('')
@@ -35,6 +36,7 @@ const SignUpScreen = () => {
          setPassword('');
          signUpFunction(user);
       }
+      history.push(WELCOME);
    }
 
    const onSignUpWithGoogleClick = async () => {
@@ -44,11 +46,12 @@ const SignUpScreen = () => {
          setPassword('');
          signUpFunction(user);
       }
+      history.push(WELCOME);
    }
 
    if (loggedIn) {
       return (
-         <Redirect to={WELCOME} />
+         <Redirect to={HOME} />
       )
    }
 
