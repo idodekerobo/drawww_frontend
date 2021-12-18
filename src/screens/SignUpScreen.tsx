@@ -28,6 +28,7 @@ const SignUpScreen = () => {
    const [ password, setPassword ] = useState<string>('');
 
    const onSignUpClick = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
       const user = await signUpWithFirebase(email, password)
       if (user) {
          setEmail('');
