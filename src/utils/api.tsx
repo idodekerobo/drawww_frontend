@@ -6,7 +6,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
 import { doc, collection, getDoc, getDocs, setDoc, updateDoc, arrayUnion, Timestamp, DocumentData } from "firebase/firestore";
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
-export const TEST_BACKEND_URL = 'http://localhost:5000';
+// export const BACKEND_URL = 'http://localhost:5000';
+export const BACKEND_URL = 'https://drawww-backend.herokuapp.com/';
 
 export const signUpWithFirebase = async (email: string, password: string): Promise<User | null> => {
    try {
@@ -264,22 +265,6 @@ export const getRaffleImagesFromStorage = async (raffleId: string): Promise<stri
       return [ ];
    }
 }
-const getImageUrlsAtStoragePath = async (storagePath: string): Promise<string[]> => {
-   let imageUrlArr: string[] = [ ];
-   const refPath = ref(firebaseStorage, storagePath)
-   try {
-      const listRef = await listAll(refPath); // returns an array of item references
-      for (let i=0; i < listRef.items.length; i++) {
-         const itemUrl = await getDownloadURL(listRef.items[i]);
-         imageUrlArr.push(itemUrl);
-      }
-      return imageUrlArr;
-   } catch (err) {
-      console.log('error getting image');
-      console.log(err);
-      return [ ];
-   }  
-}
 
 export const getUserDataObjectFromUid = async (userId: string): Promise<DocumentData | null> => {
    try {
@@ -324,3 +309,20 @@ export const updateTicketsAvailableInRaffle = async (raffleId: string, ticketsSo
       console.log(err);
    }
 }
+
+// const getImageUrlsAtStoragePath = async (storagePath: string): Promise<string[]> => {
+//    let imageUrlArr: string[] = [ ];
+//    const refPath = ref(firebaseStorage, storagePath)
+//    try {
+//       const listRef = await listAll(refPath); // returns an array of item references
+//       for (let i=0; i < listRef.items.length; i++) {
+//          const itemUrl = await getDownloadURL(listRef.items[i]);
+//          imageUrlArr.push(itemUrl);
+//       }
+//       return imageUrlArr;
+//    } catch (err) {
+//       console.log('error getting image');
+//       console.log(err);
+//       return [ ];
+//    }  
+// }

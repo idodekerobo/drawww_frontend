@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { Route, Redirect } from "react-router-dom";
 import { LOGIN } from '../constants';
 
 const PrivateRouteWrapper = ({ children, ...rest}: any) => {
-   const { loggedIn, user, loading } = useContext(AuthContext);
+   const { user, loading } = useContext(AuthContext);
    return (
       <Route {...rest} 
          render={ ({ location }) => {

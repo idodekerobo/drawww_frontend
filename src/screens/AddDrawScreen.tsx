@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { addRaffleToFirestore } from '../utils/api';
-import { SneakerGender } from '../utils/types';
 import { HOME } from '../constants';
 
 // custom components
@@ -15,7 +14,6 @@ import NavigationBar from '../components/NavigationBar';
 import styles from '../styles/AddDrawScreen.module.css';
 
 // material ui
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';

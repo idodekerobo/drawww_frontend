@@ -5,7 +5,7 @@ import { useParams, useHistory } from "react-router-dom";
 // api/utils
 import { IAccountUrlParams } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { TEST_BACKEND_URL, signOutWithFirebase } from '../utils/api';
+import { BACKEND_URL, signOutWithFirebase } from '../utils/api';
 import { HOME } from "../constants";
 
 // custom components
@@ -57,7 +57,7 @@ const AccountScreen = () => {
             <Button sx={{ marginBottom: 3, width: 300}} onClick={() => onEditProfileClick()} variant="contained">{editString}</Button>
             { (editModeActive) ? <UpdateProfileInfoForm /> : null }
 
-            <a onClick={() => clickedStripe()} className={styles.link} href={`${TEST_BACKEND_URL}/connect_seller/${params.accountId}`} >
+            <a onClick={() => clickedStripe()} className={styles.link} href={`${BACKEND_URL}/connect_seller/${params.accountId}`} >
                <Button sx={{ marginBottom: 3, width: 300}} variant="contained">Start Selling on Drawww</Button>
             </a>
 

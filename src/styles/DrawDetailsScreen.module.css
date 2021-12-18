@@ -53,3 +53,18 @@
 .buyButton {
    margin-top: -8px;
 }
+
+/* BUY DRAW TICKETS MODAL FORM */
+.totalPriceText {
+   margin: 0;
+   font-size: 20px;
+   font-weight: bolder;
+}
+.cardElement {
+   margin-top: 20px;
+   margin-bottom: 15px;
+   padding-bottom: 9px;
+   border-bottom: 1px solid #949494;
+   /* border-radius: 1px; */
+   /* border-bottom: black; */
+}

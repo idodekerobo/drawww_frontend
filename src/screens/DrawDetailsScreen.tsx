@@ -6,13 +6,13 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 // custom components
 import NavigationBar from "../components/NavigationBar";
-import { useParams, useHistory, Redirect } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 // styles
 import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
-import { TEST_BACKEND_URL, grabOneRaffleFromFirestore, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
+import { BACKEND_URL, grabOneRaffleFromFirestore, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
 import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserOrderObject } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { HOME, LOGIN } from '../constants';
@@ -29,7 +29,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 
@@ -110,7 +109,7 @@ const DrawDetailsScreen = () => {
          return;
       };
       const drawId = params.drawId;
-      const API_URL = `${TEST_BACKEND_URL}/checkout/${drawId}`
+      const API_URL = `${BACKEND_URL}/checkout/${drawId}`
 
       if (!stripe || !stripeElements) return;
       const response = await fetch(API_URL, {
@@ -153,11 +152,7 @@ const DrawDetailsScreen = () => {
                   buyerUserId: user.uid,
                }
                addTransactionToFirestore(orderData)
-               
-               // TODO - redirect to another page
                history.push(HOME);
-
-
             }
          }
       }
@@ -265,43 +260,46 @@ const FormDialog = ({nameOnCard, setNameOnCard, emailAddress, setEmailAddress, o
    return (
       <div>
          <Dialog open={openDialog} onClose={handleDialogClose} fullWidth={true} maxWidth={'sm'}>
-            <DialogTitle>Buy {amountOfTickets} Tickets</DialogTitle>
+            <DialogTitle sx={{ marginTop: 1 }}>Buy {amountOfTickets} Ticket(s)</DialogTitle>
             <DialogContent>
-               <DialogContentText>
+               <p className={styles.totalPriceText}>
                   Total: ${amountOfTickets * pricePerTicket}
-               </DialogContentText>
-               
-                  <TextField
-                     autoFocus
-                     required
-                     margin="dense"
-                     id="email"
-                     label="Email Address"
-                     placeholder="Enter the email where you'd like to see your receipt"
-                     type="email"
-                     fullWidth
-                     variant="standard"
-                     value={emailAddress}
-                     onChange={(e) => setEmailAddress(e.target.value)}
-                  />
-                  <TextField
-                     autoFocus
-                     required
-                     margin="dense"
-                     id="name"
-                     label="Name on Card"
-                     placeholder="Enter the name on the card being used"
-                     type="text"
-                     fullWidth
-                     variant="standard"
-                     value={nameOnCard}
-                     onChange={(e) => setNameOnCard(e.target.value)}
-                  />
-                  <CardElement />
+               </p>
+
+               <TextField
+                  sx={{ marginBottom: 2 }}
+                  autoFocus
+                  required
+                  margin="dense"
+                  id="email"
+                  label="Email Address"
+                  placeholder="Email where you'll get your receipt"
+                  type="email"
+                  fullWidth
+                  variant="standard"
+                  value={emailAddress}
+                  onChange={(e) => setEmailAddress(e.target.value)}
+               />
+               <TextField
+                  sx={{ marginTop: 0, marginBottom: 2 }}
+                  autoFocus
+                  required
+                  margin="dense"
+                  id="name"
+                  label="Name on Card"
+                  placeholder="Name on card used"
+                  type="text"
+                  fullWidth
+                  variant="standard"
+                  value={nameOnCard}
+                  onChange={(e) => setNameOnCard(e.target.value)}
+               />
+
+               <CardElement className={styles.cardElement} />
                
             </DialogContent>
-            <DialogActions>
-               <Button type="submit" onClick={buyButtonClick}>Submit Order</Button>
+            <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
+               <Button sx={{ width: '80%', fontSize: 18, backgroundColor: 'black', color: 'white', marginBottom: 3 }} type="submit" onClick={buyButtonClick}>Enter the Draw</Button>
             </DialogActions>
          </Dialog>
       </div>

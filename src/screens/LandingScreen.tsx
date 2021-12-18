@@ -4,7 +4,7 @@ import React, { useState, useContext } from 'react';
 import { Redirect, useHistory } from "react-router-dom";
 // api's/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { TEST_BACKEND_URL } from '../utils/api';
+import { BACKEND_URL } from '../utils/api';
 import { HOME } from '../constants';
 // material ui
 import TextField from '@mui/material/TextField';
@@ -25,7 +25,7 @@ const LandingScreen = () => {
    const onSignUpClick = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       console.log('pressed sign up')
-      await fetch(`${TEST_BACKEND_URL}/addEmail`, {
+      await fetch(`${BACKEND_URL}/addEmail`, {
          method: 'POST',
          headers: {
             'Content-type': 'application/json',
@@ -45,9 +45,6 @@ const LandingScreen = () => {
          <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
             X
          </div>
-         {/* <div className={styles.logoContainer}>
-            <img className={styles.logoImage} alt="draw party" src={logo} />
-         </div> */}
          <div className={styles.imgContainer}>
             <img alt="sneaker" className={`${styles.rotate} ${styles.linear} ${styles.infinite}`} src={sneak} />
          </div>
