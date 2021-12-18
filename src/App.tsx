@@ -11,9 +11,10 @@ import DrawDetailsScreen from './screens/DrawDetailsScreen'
 import LandingScreen from './screens/LandingScreen';
 import PrivateRouteWrapper from './screens/PrivateRouteWrapper';
 import LoadingScreen from './screens/LoadingScreen';
+import ErrorScreen from './screens/ErrorScreen';
 
 // react router
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 
 // stripe
 import { Elements } from '@stripe/react-stripe-js';
@@ -74,6 +75,15 @@ function App() {
             </Route>
 
             <Route exact path={LANDING}>
+               <LandingScreen />
+            </Route>
+
+            {/* <Route path={'/404'}>
+               <ErrorScreen />
+            </Route>
+            <Redirect to="/404" /> */}
+
+            <Route path='*'>
                <LandingScreen />
             </Route>
 

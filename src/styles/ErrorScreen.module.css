@@ -1,0 +1,28 @@
+.containerWrapper {
+   margin: auto;
+   display: flex;
+   flex-direction: column;
+}
+@media screen and (min-width: 415px) {
+   .containerWrapper {
+      width: 60%;
+   }
+}
+.errorText {
+   text-align: center;
+   margin: 50px auto;
+   font-size: 20px;
+}
+.link {
+   font-weight: 900;
+   text-decoration: none;
+   color: rgb(206, 4, 4);
+}
+.link:hover {
+   color: black;
+   text-decoration: underline;
+}
+.link:active {
+   color: olive;
+   text-decoration: underline;
+}
