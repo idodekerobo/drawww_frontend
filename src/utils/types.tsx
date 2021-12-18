@@ -21,9 +21,9 @@ export interface IUserData {
    stripeAccountData?: IStripeUserData
 }
 export enum SellerStripeOnboardingStatus {
-   NotOnboarded,
-   PartiallyOnboarded,
-   CompletelyOnboarded
+   NotOnboarded = 0,
+   PartiallyOnboarded = 1,
+   CompletelyOnboarded = 2,
 }
 export interface IStripeUserData {
    accountId: string,
@@ -34,9 +34,13 @@ export interface IStripeUserData {
    defaultCurrency?: string,
    statementDescriptor?: string,
 }
-
-export interface IUserRaffleData {
+export enum SneakerGender {
+   "mens" = 0,
+   "womens" = 1,
+}
+export interface IUserDrawData {
    userUid: string,
+   sneakerGender: SneakerGender,
    raffleSneakerBrand: string,
    raffleSneakerName: string,
    raffleSneakerSize: string,
@@ -44,7 +48,7 @@ export interface IUserRaffleData {
    numTotalRaffleTickets: number,
    pricePerRaffleTicket: number,
 }
-export interface IRaffleDataFromFirestoreType extends IUserRaffleData {
+export interface IDrawDataFromFirestoreType extends IUserDrawData {
    id: string,
    active: boolean,
    numRemainingRaffleTickets: number,
@@ -55,22 +59,19 @@ export interface IRaffleDataFromFirestoreType extends IUserRaffleData {
    raffleImageStoragePath: string,
    raffleImageDownloadUrls: string[],
 }
-// export interface IRaffleDataWithImageURls extends IRaffleDataFromFirestoreType {
-//    raffleImageUrls: string[]
-// }
 
 export interface IAccountUrlParams {
    accountId?: string,
 }
-export interface IRaffleUrlParams {
-   raffleId: string,
+export interface IDrawUrlParams {
+   drawId: string,
 }
 
 export interface IUserOrderObject {
    sellerUserId: string,
    sellerStripeAcctId: string,
    stripePaymentIntentId: string,
-   raffleId :string,
+   drawId :string,
    ticketsSold: number, 
    buyerUserId: string,
 }
@@ -79,6 +80,6 @@ export interface ITransactionFirestoreObject extends IUserOrderObject {
    dateCompleted: Timestamp,
 }
 
-export interface IRaffleCardProps {
-   raffle: IRaffleDataFromFirestoreType
+export interface IDrawCardProps {
+   draw: IDrawDataFromFirestoreType
 }

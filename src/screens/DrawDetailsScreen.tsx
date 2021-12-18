@@ -9,11 +9,11 @@ import NavigationBar from "../components/NavigationBar";
 import { useParams, useHistory, Redirect } from "react-router-dom";
 
 // styles
-import styles from '../styles/RaffleDetailsScreen.module.css'
+import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
 import { TEST_BACKEND_URL, grabOneRaffleFromFirestore, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
-import { IRaffleUrlParams, IRaffleDataFromFirestoreType, IUserOrderObject } from '../utils/types';
+import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserOrderObject } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { HOME, LOGIN } from '../constants';
 
@@ -33,7 +33,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 
-const initRaffleState = {
+const initDrawState = {
    userUid: '',
    raffleSneakerBrand: '',
    raffleSneakerName: '',
@@ -49,16 +49,16 @@ const initRaffleState = {
    raffleExpirationDate: Timestamp.now(),
 }
 
-const initRaffleUrlArr: string[] = []
+const initDrawUrlArr: string[] = []
 
-const RaffleDetailsScreen = () => {
-   const params: IRaffleUrlParams = useParams();
+const DrawDetailsScreen = () => {
+   const params: IDrawUrlParams = useParams();
    const { user } = useContext(AuthContext);
    const history = useHistory();
    const stripe = useStripe();
    const stripeElements = useElements();
-   const [raffleData, setRaffleData] = useState<IRaffleDataFromFirestoreType | DocumentData>(initRaffleState)
-   const [ raffleImageUrls, setRaffleImageUrls ] = useState(initRaffleUrlArr);
+   const [drawData, setDrawData] = useState<IDrawDataFromFirestoreType | DocumentData>(initDrawState)
+   const [ drawImageUrls, setDrawImageUrls ] = useState(initDrawUrlArr);
    const [amountOfTickets, setAmountOfTickets] = useState(1);
 
    const [ nameOnCard, setNameOnCard ] = useState('');
@@ -109,8 +109,8 @@ const RaffleDetailsScreen = () => {
          setAmountOfTickets(1);
          return;
       };
-      const raffleId = params.raffleId;
-      const API_URL = `${TEST_BACKEND_URL}/checkout/${raffleId}`
+      const drawId = params.drawId;
+      const API_URL = `${TEST_BACKEND_URL}/checkout/${drawId}`
 
       if (!stripe || !stripeElements) return;
       const response = await fetch(API_URL, {
@@ -142,14 +142,14 @@ const RaffleDetailsScreen = () => {
             if (paymentResult.paymentIntent.status === 'succeeded') {
                alert('Thank you! Payment successfully went through!');
 
-               updateTicketsAvailableInRaffle(raffleId, paymentIntentResponse.ticketsSold, paymentIntentResponse.ticketsRemaining);
+               updateTicketsAvailableInRaffle(drawId, paymentIntentResponse.ticketsSold, paymentIntentResponse.ticketsRemaining);
                
                const orderData: IUserOrderObject = {
                   stripePaymentIntentId: paymentIntentResponse.id,
                   sellerStripeAcctId: paymentIntentResponse.sellerStripeAcctId,
                   ticketsSold: paymentIntentResponse.ticketsSold,
                   sellerUserId: paymentIntentResponse.sellerUserId,
-                  raffleId,
+                  drawId,
                   buyerUserId: user.uid,
                }
                addTransactionToFirestore(orderData)
@@ -165,17 +165,17 @@ const RaffleDetailsScreen = () => {
    }
 
    useEffect(() => {
-      const setRaffle = async () => {
-         let raffle;
-         if (params.raffleId) {
-            raffle = await grabOneRaffleFromFirestore(params.raffleId);
-            if (raffle) setRaffleData(raffle);
-            const raffleImagesUrlArr = await getRaffleImagesFromStorage(params.raffleId);
-            setRaffleImageUrls(raffleImagesUrlArr);
+      const setDraw = async () => {
+         let draw;
+         if (params.drawId) {
+            draw = await grabOneRaffleFromFirestore(params.drawId);
+            if (draw) setDrawData(draw);
+            const raffleImagesUrlArr = await getRaffleImagesFromStorage(params.drawId);
+            setDrawImageUrls(raffleImagesUrlArr);
          }
       }
-      setRaffle();
-   }, [ params.raffleId ])
+      setDraw();
+   }, [ params.drawId ])
 
    return (
       <>
@@ -190,7 +190,7 @@ const RaffleDetailsScreen = () => {
                   <CardMedia
                      component="img"
                      height="140"
-                     src={raffleImageUrls[(raffleImageUrls.length-1)]}
+                     src={drawImageUrls[(drawImageUrls.length-1)]}
                      alt="sneaker raffle"
                   />
                   {/* </CardActionArea> */}
@@ -218,13 +218,13 @@ const RaffleDetailsScreen = () => {
 
                <div className={styles.raffleDetailsContainer}>
                   <Typography gutterBottom variant="h5" component="div">
-                     {raffleData.raffleSneakerBrand} {raffleData.raffleSneakerName}
+                     {drawData.raffleSneakerBrand} {drawData.raffleSneakerName}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                     Price Per Ticket: ${raffleData.pricePerRaffleTicket}
+                     Price Per Ticket: ${drawData.pricePerRaffleTicket}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                     Remaining tickets: {raffleData.numRemainingRaffleTickets}
+                     Remaining tickets: {drawData.numRemainingRaffleTickets}
                   </Typography>
                   
                </div>
@@ -239,7 +239,7 @@ const RaffleDetailsScreen = () => {
                handleClickDialogOpen={handleClickDialogOpen}
                handleDialogClose={handleDialogClose}
                amountOfTickets={amountOfTickets} 
-               pricePerTicket={raffleData.pricePerRaffleTicket}
+               pricePerTicket={drawData.pricePerRaffleTicket}
                buyButtonClick={buyButtonClick}
             />
          </div>
@@ -247,7 +247,7 @@ const RaffleDetailsScreen = () => {
       </>
    )
 }
-export default RaffleDetailsScreen;
+export default DrawDetailsScreen;
 
 interface DialogProps {
    nameOnCard: string,

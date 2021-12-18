@@ -45,6 +45,9 @@ const LandingScreen = () => {
          <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
             X
          </div>
+         {/* <div className={styles.logoContainer}>
+            <img className={styles.logoImage} alt="draw party" src={logo} />
+         </div> */}
          <div className={styles.imgContainer}>
             <img alt="sneaker" className={`${styles.rotate} ${styles.linear} ${styles.infinite}`} src={sneak} />
          </div>
@@ -61,7 +64,7 @@ const LandingScreen = () => {
                value={userEmail}
                onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" className={styles.signUpButton} variant="contained">be the first to know about new raffles</Button>
+            <Button type="submit" className={styles.signUpButton} variant="contained">be the first to know about a new draw</Button>
          </form>
       </div>
    )

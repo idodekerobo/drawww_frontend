@@ -1,5 +1,5 @@
 import { firebaseAuth, googleAuthProvider, firestoreDb, firebaseStorage } from './firebase';
-import { IUserData, IUserRaffleData, IRaffleDataFromFirestoreType, IStripeUserData, IUserOrderObject, ITransactionFirestoreObject } from './types'
+import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IStripeUserData, IUserOrderObject, ITransactionFirestoreObject } from './types'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
    signInWithPopup, updateProfile, User,
 } from 'firebase/auth';
@@ -141,7 +141,7 @@ export const updateUserWhenOnboardedToStripe = async (userUid: string, stripeUse
    }
 }
 
-export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IUserRaffleData, raffleImages: FileList | null): Promise<boolean> => {
+export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IUserDrawData, raffleImages: FileList | null): Promise<boolean> => {
    
    const timeRaffleCreated: Timestamp = Timestamp.now()
    
@@ -153,7 +153,7 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
 
    try {
       const newRaffleRef = doc(collection(firestoreDb, raffleCollectionName));
-      const data: IRaffleDataFromFirestoreType = {
+      const data: IDrawDataFromFirestoreType = {
          ...raffleDataObject,
          // add default object values
          id: newRaffleRef.id,
@@ -186,7 +186,7 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
    }
 }
 
-export const grabRafflesFromFirestore = async (): Promise<IRaffleDataFromFirestoreType[]> => {
+export const grabRafflesFromFirestore = async (): Promise<IDrawDataFromFirestoreType[]> => {
    try {
       const querySnapsot = await getDocs(collection(firestoreDb, raffleCollectionName));
       const raffleArr:Array<any> = []; // update to raffleDataFromFirestore type

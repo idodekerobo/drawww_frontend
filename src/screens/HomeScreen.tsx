@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 // components
 import NavigationBar from '../components/NavigationBar';
 import SplashBar from '../components/SplashBar';
-import RaffleCard from '../components/RaffleCard';
+import DrawCard from '../components/DrawCard';
 
 // context/api/utils
 import { grabRafflesFromFirestore } from '../utils/api';
-import { IRaffleDataFromFirestoreType } from '../utils/types';
+import { IDrawDataFromFirestoreType } from '../utils/types';
 
 // css styling
 import styles from '../styles/HomeScreen.module.css';
@@ -17,15 +17,15 @@ import styles from '../styles/HomeScreen.module.css';
 import Container from '@mui/material/Container';
 
 const HomeScreen = () => {
-   const [ raffleData, setRaffleData ] = useState<IRaffleDataFromFirestoreType[]>([])
+   const [ drawData, setDrawData ] = useState<IDrawDataFromFirestoreType[]>([])
 
-   const getRaffleDataFunc = async () => {
-      const getRaffleData = await grabRafflesFromFirestore();
-      setRaffleData(getRaffleData);
+   const getDrawDataFunc = async () => {
+      const getDrawData = await grabRafflesFromFirestore();
+      setDrawData(getDrawData);
    }
 
    useEffect(() => {
-      getRaffleDataFunc();
+      getDrawDataFunc();
    }, [ ])
 
    return (
@@ -33,7 +33,7 @@ const HomeScreen = () => {
          <NavigationBar />
          <SplashBar />
          <Container className={styles.containerWrapper} maxWidth="xl">
-            {raffleData.map((raffle) =>  <RaffleCard raffle={raffle} key={raffle.id} />) }
+            {drawData.map((draw) =>  <DrawCard draw={draw} key={draw.id} />) }
          </Container>
       </div>
    )

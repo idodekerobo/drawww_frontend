@@ -5,21 +5,25 @@ import { useHistory } from "react-router-dom";
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { addRaffleToFirestore } from '../utils/api';
+import { SneakerGender } from '../utils/types';
 import { HOME } from '../constants';
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
 
 // styles
-import styles from '../styles/AddRaffleScreen.module.css';
+import styles from '../styles/AddDrawScreen.module.css';
 
 // material ui
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
-const AddRaffleScreen = () => {
+const AddDrawScreen = () => {
    const history = useHistory();
    const { user } = useContext(AuthContext);
 
@@ -32,6 +36,8 @@ const AddRaffleScreen = () => {
    const [ raffleSneakerName, setRaffleSneakerName ] = useState('');
    const [ raffleSneakerSize, setRaffleSneakerSize ] = useState('');
    const [ raffleImages, setRaffleImages ] = useState<null | FileList>(null);
+
+   const [ sneakerGender, setSneakerGender ] = useState(0);
 
    const onSubmitRaffleClick = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -47,6 +53,7 @@ const AddRaffleScreen = () => {
             raffleDuration: numRaffleDuration,
             pricePerRaffleTicket: numPricePerRaffleTicket,
             numTotalRaffleTickets,
+            sneakerGender,
             raffleSneakerBrand, raffleSneakerName, raffleSneakerSize,
          }
          const completed = await addRaffleToFirestore(user.uid, userRaffleData, raffleImages);
@@ -67,7 +74,7 @@ const AddRaffleScreen = () => {
          <NavigationBar />
          <div className={styles.containerWrapper}>
 
-            <h3>Add A New Raffle</h3>
+            <h3>Add A New Draw</h3>
             <form className={styles.addRaffleFormContainer} onSubmit={onSubmitRaffleClick}>
                <TextField
                   sx={{ marginBottom: 3 }}
@@ -99,12 +106,17 @@ const AddRaffleScreen = () => {
                   value={raffleDuration}
                   onChange={(e) => setRaffleDuration(e.target.value)}
                />
+               <RadioGroup sx={{ marginBottom: 3 }} aria-label="shoe-gender" defaultValue={0} name="sneaker-gender">
+                  <FormControlLabel value={1} control={<Radio onChange={(e) => setSneakerGender(Number(e.target.value))} />} label="Women's" />
+                  <FormControlLabel value={0} control={<Radio onChange={(e) => setSneakerGender(Number(e.target.value))} />} label="Men's" />
+               </RadioGroup>
+               
                <TextField
                   sx={{ marginBottom: 3 }}
                   required
                   type="number"
                   id="outlined-required"
-                  label="Size (in men's)"
+                  label="Shoe Size"
                   placeholder="Size"
                   value={raffleSneakerSize}
                   onChange={(e) => setRaffleSneakerSize(e.target.value)}
@@ -142,27 +154,4 @@ const AddRaffleScreen = () => {
       </div>
    )
 }
-export default AddRaffleScreen;
-
-/*
-raffle data model
-# raffle id key
-   # user uid
-   # duration
-   # num raffle tickets avail
-   # price per raffle ticket
-   # tickets available (?? necessary ??)
-   # raffle type
-   # sneaker, clothes, etc.
-   # raffle name
-   # sneaker brand
-   # men's or women's size
-   # sneaker size (dependent on mens or womens flag?? ? ? )
-   # sneaker name
-
-   // auto defaults
-   # time created 
-   # end date/time
-   # tickets sold
-
-*/
+export default AddDrawScreen;

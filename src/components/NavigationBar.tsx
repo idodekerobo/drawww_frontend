@@ -18,7 +18,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { NavLink } from "react-router-dom";
 
 
-import { HOME, LOGIN, ACCOUNT, ADD_RAFFLE } from '../constants';
+import { HOME, LOGIN, ACCOUNT, ADD_DRAW } from '../constants';
 
 const NavigationBar = () => {
    const { user, loggedIn } = useContext(AuthContext);
@@ -30,11 +30,11 @@ const NavigationBar = () => {
             <AppBar position="static" color="transparent">
                <Toolbar>
                   <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                     <NavLink className={styles.navLink} to={HOME}>DrawParty</NavLink>
+                     <NavLink className={styles.navLink} to={HOME}>Drawww</NavLink>
                   </Typography>
 
                   <Button color="inherit">
-                     <NavLink className={styles.navLink} to={ADD_RAFFLE}>Add Draw</NavLink>
+                     <NavLink className={styles.navLink} to={ADD_DRAW}>Add Draw</NavLink>
                   </Button>
                   
                   {loggedIn ? 

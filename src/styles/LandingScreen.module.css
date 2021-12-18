@@ -30,6 +30,35 @@
    background-color: red;
    border: 1px solid black;
 }
+.logoContainer, .logoImage {
+   max-width: 200px;
+   max-height: 200px;
+}
+/* .logoContainer {
+   animation: logoContainer 13s linear infinite alternate;
+   animation: logoContainer 15s linear infinite;
+} */
+/* .logoImage {
+   animation: logoImage 7s linear infinite alternate;
+   animation: logoImage 3s linear infinite alternate;
+} */
+/* @keyframes logoContainer {
+   100% {
+     transform: translateX( calc(100vw - 600px) );
+   }
+ }
+ @keyframes logoImage {
+   100% {
+     transform: translateY( calc(100vh - 450px) );
+   }
+} */
+/* @keyframes logoContainer {
+   from {
+      transform: rotateY(0deg)
+   } to {
+      transform: rotateY(359deg)
+   }
+} */
 .signUpForm {
    display: flex;
    flex-direction: column;
@@ -55,11 +84,6 @@ img {
    animation: rotation 10s;
 }
 @keyframes rotation {
-   /* from {
-      transform: rotate(0deg);
-   } to {
-      transform: rotate(359deg);
-   } */
    from {
       transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
    } to {

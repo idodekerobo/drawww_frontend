@@ -58,7 +58,7 @@ const AccountScreen = () => {
             { (editModeActive) ? <UpdateProfileInfoForm /> : null }
 
             <a onClick={() => clickedStripe()} className={styles.link} href={`${TEST_BACKEND_URL}/connect_seller/${params.accountId}`} >
-               <Button sx={{ marginBottom: 3, width: 300}} variant="contained">Start Selling on Draw Party</Button>
+               <Button sx={{ marginBottom: 3, width: 300}} variant="contained">Start Selling on Drawww</Button>
             </a>
 
             <Button sx={{ marginBottom: 3, width: 300}} onClick={() => onlogOutButtonClick()} variant="contained">Log Out</Button>
