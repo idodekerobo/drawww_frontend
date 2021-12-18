@@ -216,6 +216,9 @@ const DrawDetailsScreen = () => {
                      {drawData.raffleSneakerBrand} {drawData.raffleSneakerName}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
+                     {drawData.sneakerGender == 0 ? "Men's" : "Women's"}, Size: {drawData.raffleSneakerSize}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
                      Price Per Ticket: ${drawData.pricePerRaffleTicket}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">

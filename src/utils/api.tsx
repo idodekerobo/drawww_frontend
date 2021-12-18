@@ -6,8 +6,9 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
 import { doc, collection, getDoc, getDocs, setDoc, updateDoc, arrayUnion, Timestamp, DocumentData } from "firebase/firestore";
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
+// MAKE SURE YOU DON'T PUT A / AFTER THE API URL
 // export const BACKEND_URL = 'http://localhost:5000';
-export const BACKEND_URL = 'https://drawww-backend.herokuapp.com/';
+export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
 
 export const signUpWithFirebase = async (email: string, password: string): Promise<User | null> => {
    try {
