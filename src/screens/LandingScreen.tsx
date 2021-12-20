@@ -59,6 +59,7 @@ const LandingScreen = () => {
                </div>
 
                <form className={styles.signUpForm} onSubmit={onSignUpClick}>
+                  <p className={styles.text}>coming 1/1/22</p>
                   <TextField
                      sx={{ marginBottom: 1 }}
                      className={styles.emailInput}

@@ -96,6 +96,12 @@ img {
 .infinite {
    animation-iteration-count: infinite;
 }
+.text {
+   text-align: center;
+   text-transform: uppercase;
+   font-weight: bold;
+   letter-spacing: 4px;
+}
 .emoji {
    margin-left: 15px;
    margin-right: 15px;
