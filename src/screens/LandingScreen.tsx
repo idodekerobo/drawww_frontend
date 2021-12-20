@@ -17,6 +17,7 @@ const LandingScreen = () => {
    const { loggedIn } = useContext(AuthContext);
    const history = useHistory();
    const [userEmail, setEmail] = useState('');
+   const [ signedUp, setSignedUp ] = useState(false);
 
    const onSkipClick = () => {
       history.push(HOME);
@@ -24,6 +25,7 @@ const LandingScreen = () => {
 
    const onSignUpClick = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      setSignedUp(true);
       console.log('pressed sign up')
       await fetch(`${BACKEND_URL}/addEmail`, {
          method: 'POST',
@@ -34,7 +36,7 @@ const LandingScreen = () => {
             emailAddress: userEmail
          }),
       });
-      history.push(HOME);
+      // history.push(HOME);
    }
 
    if (loggedIn) {
@@ -42,27 +44,36 @@ const LandingScreen = () => {
    }
    return (
       <div className={styles.container}>
-         <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
+         {/* <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
             X
-         </div>
-         <div className={styles.imgContainer}>
-            <img alt="sneaker" className={`${styles.rotate} ${styles.linear} ${styles.infinite}`} src={sneak} />
-         </div>
+         </div> */}
 
-         <form className={styles.signUpForm} onSubmit={onSignUpClick}>
-            <TextField
-               sx={{ marginBottom: 1 }}
-               className={styles.emailInput}
-               required
-               type="email"
-               id="outlined-required"
-               label="email address"
-               placeholder="email address"
-               value={userEmail}
-               onChange={(e) => setEmail(e.target.value)}
-            />
-            <Button type="submit" className={styles.signUpButton} variant="contained">be the first to know about a new draw</Button>
-         </form>
+         { signedUp ? 
+            <div>
+               <p><span className={`${styles.emoji} ${styles.leftEmoji}`}>🤝</span>you'll hear from us soon<span className={styles.emoji}>🤝</span></p>
+            </div>    
+         :
+            <>
+               <div className={styles.imgContainer}>
+                  <img alt="sneaker" className={`${styles.rotate} ${styles.linear} ${styles.infinite}`} src={sneak} />
+               </div>
+
+               <form className={styles.signUpForm} onSubmit={onSignUpClick}>
+                  <TextField
+                     sx={{ marginBottom: 1 }}
+                     className={styles.emailInput}
+                     required
+                     type="email"
+                     id="outlined-required"
+                     label="email address"
+                     placeholder="email address"
+                     value={userEmail}
+                     onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <Button type="submit" className={styles.signUpButton} variant="contained">be the first to know about a new draw</Button>
+               </form>
+            </>
+         }
       </div>
    )
 }

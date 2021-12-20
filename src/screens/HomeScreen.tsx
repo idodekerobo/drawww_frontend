@@ -25,7 +25,7 @@ const HomeScreen = () => {
    }
 
    useEffect(() => {
-      getDrawDataFunc();
+      // getDrawDataFunc();
    }, [ ])
 
    return (
@@ -34,6 +34,15 @@ const HomeScreen = () => {
          <SplashBar />
          <Container className={styles.containerWrapper} maxWidth="xl">
             {drawData.map((draw) =>  <DrawCard draw={draw} key={draw.id} />) }
+            {(drawData.length == 0) ?
+               <div className={styles.center}>
+                  <p className={styles.font}>
+                     New draw's will be coming soon
+                  </p>
+               </div>
+            :
+               null
+            }
          </Container>
       </div>
    )

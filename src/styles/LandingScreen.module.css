@@ -96,3 +96,10 @@ img {
 .infinite {
    animation-iteration-count: infinite;
 }
+.emoji {
+   margin-left: 15px;
+   margin-right: 15px;
+}
+.leftEmoji {
+   padding-right: 3px;
+}
