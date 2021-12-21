@@ -59,6 +59,8 @@ const LandingScreen = () => {
                </div>
 
                <form className={styles.signUpForm} onSubmit={onSignUpClick}>
+                  <p className={`${styles.infoText}`}>actually win sneaker draws</p>
+                  <p className={`${styles.infoText}`}>host your own sneaker draws</p>
                   <p className={styles.text}>coming 1/1/22</p>
                   <TextField
                      sx={{ marginBottom: 1 }}
