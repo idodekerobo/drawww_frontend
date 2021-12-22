@@ -34,31 +34,6 @@
    max-width: 200px;
    max-height: 200px;
 }
-/* .logoContainer {
-   animation: logoContainer 13s linear infinite alternate;
-   animation: logoContainer 15s linear infinite;
-} */
-/* .logoImage {
-   animation: logoImage 7s linear infinite alternate;
-   animation: logoImage 3s linear infinite alternate;
-} */
-/* @keyframes logoContainer {
-   100% {
-     transform: translateX( calc(100vw - 600px) );
-   }
- }
- @keyframes logoImage {
-   100% {
-     transform: translateY( calc(100vh - 450px) );
-   }
-} */
-/* @keyframes logoContainer {
-   from {
-      transform: rotateY(0deg)
-   } to {
-      transform: rotateY(359deg)
-   }
-} */
 .signUpForm {
    display: flex;
    flex-direction: column;
@@ -116,10 +91,6 @@ img {
    margin-top: 4px;
    margin-bottom: 7px;
 }
-/* .iconWrapperATag {
-   text-align: center;
-   margin-bottom: 2px;
-} */
 .icon {
    color: black;
    margin-left: 20px;
@@ -137,4 +108,15 @@ img {
 }
 .leftEmoji {
    padding-right: 1px;
+}
+.audioPlayer {
+   position: absolute;
+   top: 20px;
+   left: 20px;
+}
+.audioPlay:hover {
+   color: grey;
+}
+.audioPlayer:active {
+   color: red;
 }

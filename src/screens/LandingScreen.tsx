@@ -1,5 +1,5 @@
 // react
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 // router
 import { Redirect, useHistory } from "react-router-dom";
 // api's/utils
@@ -11,6 +11,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 // styles
 import styles from '../styles/LandingScreen.module.css'
 import sneak from '../img/pix_sneak.png'
@@ -20,6 +22,8 @@ const LandingScreen = () => {
    const history = useHistory();
    const [userEmail, setEmail] = useState('');
    const [ signedUp, setSignedUp ] = useState(false);
+   const [ audioPlay, setAudioPlay ] = useState(false);
+   const audioPlayerRef = useRef<HTMLAudioElement>(null);
 
    const onSkipClick = () => {
       history.push(HOME);
@@ -41,11 +45,37 @@ const LandingScreen = () => {
       // history.push(HOME);
    }
 
+   const controlAudio = () => {
+      if (audioPlay) {
+         if (audioPlayerRef.current !== null) {
+            setAudioPlay(false)
+            audioPlayerRef.current.pause()
+         }
+      } else {
+         if (audioPlayerRef.current !== null) {
+            setAudioPlay(true);
+            audioPlayerRef.current.play()
+         }
+      }
+   }
+
    if (loggedIn) {
       return <Redirect to={HOME} />
    }
    return (
       <div className={styles.container}>
+         <div className={styles.audioPlayer} onClick={() => controlAudio()}>
+               <>
+                  {audioPlay ? 
+                     <VolumeUpIcon />
+                     :
+                     <VolumeOffIcon />
+                  }
+                  <audio ref={audioPlayerRef}>
+                     <source src={"https://firebasestorage.googleapis.com/v0/b/raffles-44479.appspot.com/o/music%2F1-09%20Send%20It%20Up.mp3?alt=media&token=283d746d-0281-4b13-a73c-97952f87d9bc"} type="audio/mpeg"/>
+                  </audio>
+               </>
+            </div>
          {/* <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
             X
          </div> */}
