@@ -9,6 +9,8 @@ import { HOME } from '../constants';
 // material ui
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import TwitterIcon from '@mui/icons-material/Twitter';
 // styles
 import styles from '../styles/LandingScreen.module.css'
 import sneak from '../img/pix_sneak.png'
@@ -62,6 +64,14 @@ const LandingScreen = () => {
                   <p className={`${styles.infoText}`}>win draws, pay less</p>
                   <p className={`${styles.infoText}`}>host your own draws</p>
                   <p className={styles.text}>coming 1/1/22</p>
+                  <div className={styles.iconContainer}>
+                     <a className={styles.iconWrapperATag} href="https://www.instagram.com/drawww.xyz/">
+                        <InstagramIcon className={styles.icon} />
+                     </a>
+                     <a className={styles.iconWrapperATag} href="https://twitter.com/drawwwxyz">
+                        <TwitterIcon className={styles.icon} />
+                     </a>
+                  </div>
                   <TextField
                      sx={{ marginBottom: 1 }}
                      className={styles.emailInput}

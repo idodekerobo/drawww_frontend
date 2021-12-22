@@ -108,6 +108,28 @@ img {
    text-transform: uppercase;
    font-weight: 700;
    letter-spacing: 4px;
+   margin-bottom: 3px;
+}
+.iconContainer {
+   display: flex;
+   justify-content: center;
+   margin-top: 4px;
+   margin-bottom: 7px;
+}
+/* .iconWrapperATag {
+   text-align: center;
+   margin-bottom: 2px;
+} */
+.icon {
+   color: black;
+   margin-left: 20px;
+   margin-right: 20px;
+}
+.icon:hover {
+   color: grey;
+}
+.icon:active {
+   color: red;
 }
 .emoji {
    margin-left: 15px;
