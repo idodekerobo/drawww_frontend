@@ -25,8 +25,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ } from './constants'
 import { STRIPE_PUBLISHABLE_TEST_KEY, STRIPE_PUBLISHABLE_LIVE_KEY } from './utils/api';
 
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_TEST_KEY);
-// const stripePromise = loadStripe(STRIPE_PUBLISHABLE_LIVE_KEY);
+// const stripePromise = loadStripe(STRIPE_PUBLISHABLE_TEST_KEY);
+const stripePromise = loadStripe(STRIPE_PUBLISHABLE_LIVE_KEY);
 
 const theme = createTheme({
    palette: {

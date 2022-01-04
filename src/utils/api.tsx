@@ -5,12 +5,12 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
 } from 'firebase/auth';
 import { doc, collection, getDoc, getDocs, setDoc, updateDoc, arrayUnion, Timestamp, DocumentData } from "firebase/firestore";
 import { AuthError } from 'firebase/auth';
-import { FirebaseError } from 'firebase/app';
+// import { FirebaseError } from 'firebase/app';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
 // MAKE SURE YOU DON'T PUT A / AFTER THE API URL
-export const BACKEND_URL = 'http://localhost:5000';
-// export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
+// export const BACKEND_URL = 'http://localhost:5000';
+export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
 export const STRIPE_PUBLISHABLE_TEST_KEY = 'pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks';
 export const STRIPE_PUBLISHABLE_LIVE_KEY = 'pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc';
 
@@ -24,8 +24,6 @@ export const signUpWithFirebase = async (email: string, password: string): Promi
       }
       return null
    } catch (error: unknown) {
-      // const errCode = err.code;
-      // const errMsg = err.message;
       const e = error as AuthError;
       console.log(e);
       console.log(e.code)
@@ -33,7 +31,7 @@ export const signUpWithFirebase = async (email: string, password: string): Promi
       alert(e.code);
       return null
    }
-   }
+}
 
 export const loginWithFirebase = async (email: string, password: string): Promise<User | null> => {
    try {
@@ -465,20 +463,3 @@ export const checkIfUserIsEligibleToOnboardToStripe = async (userUid: string): P
    }
    return false;
 }
-
-// const getImageUrlsAtStoragePath = async (storagePath: string): Promise<string[]> => {
-//    let imageUrlArr: string[] = [ ];
-//    const refPath = ref(firebaseStorage, storagePath)
-//    try {
-//       const listRef = await listAll(refPath); // returns an array of item references
-//       for (let i=0; i < listRef.items.length; i++) {
-//          const itemUrl = await getDownloadURL(listRef.items[i]);
-//          imageUrlArr.push(itemUrl);
-//       }
-//       return imageUrlArr;
-//    } catch (err) {
-//       console.log('error getting image');
-//       console.log(err);
-//       return [ ];
-//    }  
-// }
