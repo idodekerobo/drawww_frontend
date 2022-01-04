@@ -64,7 +64,6 @@ const LandingScreen = () => {
                <form className={styles.signUpForm} onSubmit={onSignUpClick}>
                   <p className={`${styles.infoText}`}>win draws, pay less</p>
                   <p className={`${styles.infoText}`}>host your own draws</p>
-                  <p className={styles.text}>coming 1/1/22</p>
                   <div className={styles.iconContainer}>
                      <a className={styles.iconWrapperATag} href="https://www.instagram.com/drawww.xyz/">
                         <InstagramIcon className={styles.icon} />
