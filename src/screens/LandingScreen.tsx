@@ -30,7 +30,7 @@ const LandingScreen = () => {
    const onSignUpClick = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setSignedUp(true);
-      console.log('pressed sign up')
+      setTimeout(() => onSkipClick(), 2800)
       await fetch(`${BACKEND_URL}/addEmail`, {
          method: 'POST',
          headers: {

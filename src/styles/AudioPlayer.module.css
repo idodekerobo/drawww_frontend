@@ -1,6 +1,18 @@
 .audioPlayer {
+   background-color: inherit;
+   padding: 10px 6px 7px 6px;
    position: absolute;
    z-index: 3;
+}
+.audioPlayer:hover {
+   background-color: black;
+   color: white;
+   border: 1px solid red;
+}
+.audioPlayer:active {
+   background-color: red;
+   color: white;
+   border: 1px solid black;
 }
 .topPosition {
    top: 20px;
@@ -9,10 +21,4 @@
 .bottomPosition {
    bottom: 20px;
    left: 20px;
-}
-.audioPlay:hover {
-   color: grey;
-}
-.audioPlayer:active {
-   color: red;
 }
