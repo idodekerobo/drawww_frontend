@@ -20,7 +20,6 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-
 const UpdateProfileInfoForm = () => {
 
    const { user } = useContext(AuthContext);
@@ -42,7 +41,6 @@ const UpdateProfileInfoForm = () => {
          const newUserData = {
             name, phoneNum, city, state, zipCode, shoeGender, shoeSize
          }
-         console.log(newUserData);
          updateUserDataOnFirestore(user.uid, newUserData);
          alert('Profile has been updated!');
          history.push(HOME);
@@ -76,10 +74,10 @@ const UpdateProfileInfoForm = () => {
          <TextField sx={{ marginBottom: 3 }} label="State" placeholder="State" variant="outlined" value={state} onChange={(e) => setState(e.target.value)} />
          <TextField sx={{ marginBottom: 3 }} label="Zip Code" placeholder="Zip Code" type="tel" variant="outlined" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
 
-         <RadioGroup sx={{ marginBottom: 3, display: 'inline' }} aria-label="shoe-gender" defaultValue={0} name="sneaker-gender">
+         <RadioGroup sx={{ marginBottom: 3, display: 'inline' }} aria-label="shoe-gender" defaultValue={shoeGender} value={shoeGender} onChange={(e) => setShoeGender(Number(e.target.value))} name="sneaker-gender">
             <span className={styles.shoeSizeLabel}>Shoe Size:</span>
-            <FormControlLabel sx={{marginRight: 3, marginLeft: 0}} value={1} control={<Radio onChange={(e) => setShoeGender(Number(e.target.value))} />} label="Women's" />
-            <FormControlLabel sx={{marginRight: 0, marginLeft: 2}} value={0} control={<Radio onChange={(e) => setShoeGender(Number(e.target.value))} />} label="Men's" />
+            <FormControlLabel sx={{marginRight: 3, marginLeft: 0}} value={1} control={<Radio />} label="Women's" />
+            <FormControlLabel sx={{marginRight: 0, marginLeft: 2}} value={0} control={<Radio />} label="Men's" />
          </RadioGroup>
 
          <TextField sx={{ marginBottom: 3 }} label="Shoe Size" placeholder="Shoe Size" type="number" variant="outlined" value={shoeSize} onChange={(e) => setShoeSize(e.target.value)} />
