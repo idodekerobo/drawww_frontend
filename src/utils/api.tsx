@@ -1,14 +1,18 @@
 import { firebaseAuth, googleAuthProvider, firestoreDb, firebaseStorage } from './firebase';
-import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IStripeUserData, IUserOrderObject, ITransactionFirestoreObject } from './types'
+import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IStripeUserData, IUserTransactionObject, ITransactionFirestoreObject } from './types'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
    signInWithPopup, updateProfile, User,
 } from 'firebase/auth';
 import { doc, collection, getDoc, getDocs, setDoc, updateDoc, arrayUnion, Timestamp, DocumentData } from "firebase/firestore";
+import { AuthError } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
 // MAKE SURE YOU DON'T PUT A / AFTER THE API URL
-// export const BACKEND_URL = 'http://localhost:5000';
-export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
+export const BACKEND_URL = 'http://localhost:5000';
+// export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
+export const STRIPE_PUBLISHABLE_TEST_KEY = 'pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks';
+export const STRIPE_PUBLISHABLE_LIVE_KEY = 'pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc';
 
 export const signUpWithFirebase = async (email: string, password: string): Promise<User | null> => {
    try {
@@ -19,10 +23,14 @@ export const signUpWithFirebase = async (email: string, password: string): Promi
          return user;
       }
       return null
-   } catch (err) {
+   } catch (error: unknown) {
       // const errCode = err.code;
       // const errMsg = err.message;
-      console.log(err);
+      const e = error as AuthError;
+      console.log(e);
+      console.log(e.code)
+      console.log(e.message)
+      alert(e.code);
       return null
    }
    }
@@ -38,10 +46,11 @@ export const loginWithFirebase = async (email: string, password: string): Promis
    } catch (error: unknown) {
       // TODO - figure out how to better type cast errors
       console.log('errorrrrrr !!!!')
-      // const err = error as unknown
-      console.log(error);
-      // console.log(error.code);
-      // console.log(err.code);
+      const e = error as AuthError;
+      console.log(e);
+      console.log(e.code)
+      console.log(e.message)
+      alert(e.code);
       return null
    }
 }
@@ -54,7 +63,11 @@ export const signInWithGoogleAuth = async (): Promise<User | null> => {
    } catch (error: unknown) {
       // TODO - figure out how to better type cast errors
       console.log('errorrrrrr !!!!')
-      console.log(error);
+      const e = error as AuthError;
+      console.log(e);
+      console.log(e.code)
+      console.log(e.message)
+      alert(e.code);
       return null
    }
 }
@@ -68,7 +81,11 @@ export const signUpWithGoogleAuth = async (): Promise<User | null> => {
    } catch (error: unknown) {
       // TODO - figure out how to better type cast errors
       console.log('errorrrrrr !!!!')
-      console.log(error);
+      const e = error as AuthError;
+      console.log(e);
+      console.log(e.code)
+      console.log(e.message)
+      alert(e.code);
       return null
    }
 }
@@ -100,6 +117,7 @@ export const updateUserProfileData = (user: User, userDisplayName: string | null
 const userCollectionName = 'users';
 const raffleCollectionName = 'raffles';
 const txnRaffleCollectionName = 'transactions';
+const sellerWaitlistCollectionName = 'sellerWaitlist';
 
 const addNewUserToFirestore = async (userUid: string, emailAddress: string | null) => {
    console.log('adding new user to firestore');
@@ -116,7 +134,7 @@ const addNewUserToFirestore = async (userUid: string, emailAddress: string | nul
 }
 
 export const updateUserDataOnFirestore = async (uid: string, userDataObject: IUserData) => {
-   const { name, phoneNum, city, state, zipCode } = userDataObject;
+   const { name, phoneNum, city, state, zipCode, shoeGender, shoeSize } = userDataObject;
    try {
       await setDoc(doc(firestoreDb, userCollectionName, uid), {
          name,
@@ -124,6 +142,8 @@ export const updateUserDataOnFirestore = async (uid: string, userDataObject: IUs
          city,
          state,
          zipCode,
+         shoeGender,
+         shoeSize
       }, { merge: true })
    } catch (err) {
       console.log('error updating user in firestore');
@@ -165,6 +185,8 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
          raffleType: 'sneakers',
          timeRaffleCreated,
          raffleExpirationDate: expireDate,
+         transactions: [],
+         buyerTickets: [],
          raffleImageStoragePath: `raffles/${newRaffleRef.id}/images`,
          raffleImageDownloadUrls: [],
       }
@@ -283,7 +305,8 @@ export const getUserDataObjectFromUid = async (userId: string): Promise<Document
    }
 }
 
-export const addTransactionToFirestore = async (orderData: IUserOrderObject ) => {
+export const addTransactionToFirestore = async (orderData: IUserTransactionObject ) => {
+   const { drawId, ticketsSold, buyerUserId, sellerUserId } = orderData;
    try {
       const newTxnRef = doc(collection(firestoreDb, txnRaffleCollectionName));
       const data: ITransactionFirestoreObject = {
@@ -292,6 +315,26 @@ export const addTransactionToFirestore = async (orderData: IUserOrderObject ) =>
          ...orderData,
       }
       await setDoc(newTxnRef, data);
+      
+      try {
+         await addTransactionRefToDrawObject(newTxnRef.id, drawId)
+      } catch (err) {
+         console.log('error adding transaction ref to the draw object')
+         console.log(err)
+      }
+      
+      try {
+         await addTransactionRefToUsersObject(newTxnRef.id, buyerUserId, sellerUserId)
+      } catch (err) {
+         console.log('error adding transaction ref to the user object');
+         console.log(err);
+      }
+
+      try {
+         await addListOfBuyerIdToDrawObject(drawId, buyerUserId, ticketsSold);
+      } catch (err) {
+         console.log('error checking for unique buyer id to add to draw object');
+      }
    } catch (err) {
       console.log('err adding completed transaction to the firestore')
       console.log(err);
@@ -309,6 +352,118 @@ export const updateTicketsAvailableInRaffle = async (raffleId: string, ticketsSo
       console.log('err updating the raffle in the firestore')
       console.log(err);
    }
+}
+
+export const addListOfBuyerIdToDrawObject = async (drawId: string, buyerId: string, ticketsSold: number) => {
+   const drawRef = doc(firestoreDb, raffleCollectionName, drawId);
+   const drawData = await getDoc(drawRef);
+   if (drawData.exists()) {
+      
+      let addToArr: string[] = [];
+      for (let i=0; i < ticketsSold; i++) {
+         console.log(`adding buyer id to arr for ${i} time`)
+         addToArr.push(buyerId);
+      }
+
+      const drawObject = { ...drawData.data() } as IDrawDataFromFirestoreType
+      const buyerTicketArr = drawObject.buyerTickets;
+      
+      if (buyerTicketArr) {
+         const newArr = [...buyerTicketArr, ...addToArr];
+         console.log(newArr);
+            await updateDoc(doc(firestoreDb, raffleCollectionName, drawId), {
+               buyerTickets: newArr
+            });
+      } else {
+         // there is no unique buyer arr, add the array and the buyer id
+         await updateDoc(doc(firestoreDb, raffleCollectionName, drawId), {
+            buyerTicketArr: addToArr
+         });
+      }
+
+   } else {
+      console.log('draw data object not found when trying to add to buyer id array');
+   }
+}
+export const addTransactionRefToDrawObject = async (transactionId: string, drawId: string) => {
+   const transactionRef = doc(firestoreDb, txnRaffleCollectionName, transactionId);
+   try {
+      await updateDoc(doc(firestoreDb, raffleCollectionName, drawId), {
+         transactions: arrayUnion(transactionRef)
+      })
+   } catch (err) {
+      console.log('error adding transaction reference to draw object')
+      console.log(err);
+   }
+}
+export const addTransactionRefToUsersObject = async (transactionId: string, buyingUserId: string, sellingUserId: string) => {
+   const transactionRef = doc(firestoreDb, txnRaffleCollectionName, transactionId);
+   
+   try {
+      await updateDoc(doc(firestoreDb, userCollectionName, buyingUserId), {
+         buyerTransactions: arrayUnion(transactionRef)
+      });
+   } catch (err) {
+      console.log('error adding transaction reference to buying user object');
+      console.log(err);
+   }
+
+   try {
+      await updateDoc(doc(firestoreDb, userCollectionName, sellingUserId), {
+         sellerTransactions: arrayUnion(transactionRef)
+      });
+   } catch (err) {
+      console.log('error adding transaction reference to selling user object');
+      console.log(err);
+   }
+}
+
+export const addUserToSellerWaitlist = async (userUid: string): Promise<boolean> => {
+   try {
+      const docSnapshot = await getDoc(doc(firestoreDb, userCollectionName, userUid))
+      
+      if (docSnapshot.exists()) {
+         
+         const userData = docSnapshot.data() as IUserData;
+         if (userData.sellerWaitlist) return true;
+
+         try {
+            await updateDoc(doc(firestoreDb, userCollectionName, userUid), {
+               sellerWaitlist: true
+            })
+            await setDoc(doc(firestoreDb, sellerWaitlistCollectionName, userUid), {
+               name: userData.name,
+               uid: userUid,
+               email: userData.emailAddress
+            });
+            return false;
+         } catch (err) {
+            console.log('err addig user to waitlist on firestore');
+            console.log(err);
+            return false;
+         }
+      }
+   } catch (err) {
+      console.log('err getting user from firestore');
+      console.log(err);
+      return false;
+   }
+   return false;
+}
+
+export const checkIfUserIsEligibleToOnboardToStripe = async (userUid: string): Promise<boolean> => {
+   try {
+      const docSnapshot = await getDoc(doc(firestoreDb, userCollectionName, userUid))
+      if (docSnapshot.exists()) {
+         const userData = docSnapshot.data() as IUserData;
+         if (userData.eligibleToOnboardToStripe) return true
+      }
+   } catch (err) {
+      console.log('err getting user from firestore');
+      console.log(err);
+      return false;
+   }
+   return false;
 }
 
 // const getImageUrlsAtStoragePath = async (storagePath: string): Promise<string[]> => {

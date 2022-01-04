@@ -1,19 +1,21 @@
 import { useEffect, useState, useContext } from "react";
-import { Timestamp, DocumentData } from "firebase/firestore";
+import { Timestamp, DocumentData, onSnapshot, doc } from "firebase/firestore";
+import { firestoreDb } from '../utils/firebase';
 
 // stripe
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 // custom components
 import NavigationBar from "../components/NavigationBar";
+import CountdownTimer from '../components/CountdownTimer';
 import { useParams, useHistory } from "react-router-dom";
 
 // styles
 import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
-import { BACKEND_URL, grabOneRaffleFromFirestore, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
-import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserOrderObject } from '../utils/types';
+import { BACKEND_URL, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
+import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserTransactionObject } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { HOME, LOGIN } from '../constants';
 
@@ -30,6 +32,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const initDrawState = {
@@ -62,9 +65,11 @@ const DrawDetailsScreen = () => {
 
    const [ nameOnCard, setNameOnCard ] = useState('');
    const [ emailAddress, setEmailAddress ] = useState('');
-   const [buyButtonDisabled, setBuyButtonDisabled] = useState(false);
-
+   const [enterDrawButtonDisabled, setEnterDrawButtonDisabled] = useState(false);
    const [ openDialog, setDialog ] = useState(false);
+   const [ showProgressSpinner, setShowProgressSpinner ] = useState(false);
+   const [ confirmPaymentButtonDisabled, setConfirmPaymentButtonDisabled ] = useState(false);
+
 
    const handleClickDialogOpen = () => {
       if (!user) {
@@ -72,13 +77,15 @@ const DrawDetailsScreen = () => {
          return;
       }
       setDialog(true);
-      setBuyButtonDisabled(true);
+      setEnterDrawButtonDisabled(true);
    };
 
    const handleDialogClose = () => {
       setDialog(false);
       setNameOnCard('');
-      setBuyButtonDisabled(false);
+      setEnterDrawButtonDisabled(false);
+      setConfirmPaymentButtonDisabled(false);
+      setShowProgressSpinner(false);
    };
 
    const onInputChange = (value: string) => {
@@ -96,9 +103,11 @@ const DrawDetailsScreen = () => {
       setAmountOfTickets(newValue);
    }
 
-   const buyButtonClick = async () => {
+   const confirmPayButtonClick = async () => {
+      setConfirmPaymentButtonDisabled(true);
+      setShowProgressSpinner(true);
       if (!user) {
-         alert('Please log in or make an account before purchasing!')
+         alert('Please log in or make an account before entering draw!')
          handleDialogClose();
          return;
       }
@@ -109,18 +118,26 @@ const DrawDetailsScreen = () => {
          return;
       };
       const drawId = params.drawId;
-      const API_URL = `${BACKEND_URL}/checkout/${drawId}`
+      const CHECKOUT_URL = `${BACKEND_URL}/checkout/${drawId}`
 
       if (!stripe || !stripeElements) return;
-      const response = await fetch(API_URL, {
+      const response = await fetch(CHECKOUT_URL, {
          method: 'POST',
          headers: {
             'Content-type': 'application/json'
          },
          body: JSON.stringify({
-            amountOfTicketsPurchased: amountOfTickets
+            amountOfTicketsPurchased: amountOfTickets,
+            receipt_email: emailAddress,
          })
       })
+      // console.log(response);
+      if (response.status >= 400) {
+         alert('There was an error making the payment, please try again later!');
+         alert(response.statusText);
+         handleDialogClose();
+         return;
+      }
       const paymentIntentResponse = await response.json();
 
       const card = stripeElements.getElement(CardElement);
@@ -135,6 +152,7 @@ const DrawDetailsScreen = () => {
 
          if (paymentResult.error) {
             alert(`There was an error, please try again later. ${paymentResult.error.message}`);
+            handleDialogClose()
             console.log('error with the payment')
             console.log(paymentResult.error.message)
          } else {
@@ -143,52 +161,57 @@ const DrawDetailsScreen = () => {
 
                updateTicketsAvailableInRaffle(drawId, paymentIntentResponse.ticketsSold, paymentIntentResponse.ticketsRemaining);
                
-               const orderData: IUserOrderObject = {
+               const orderData: IUserTransactionObject = {
+                  nameOnCard,
+                  emailAddress,
                   stripePaymentIntentId: paymentIntentResponse.id,
                   sellerStripeAcctId: paymentIntentResponse.sellerStripeAcctId,
                   ticketsSold: paymentIntentResponse.ticketsSold,
                   sellerUserId: paymentIntentResponse.sellerUserId,
                   drawId,
                   buyerUserId: user.uid,
+                  // add data for dollar amounts
+                  subtotalDollarAmount: paymentIntentResponse.subtotalDollarAmount,
+                  taxDollarAmount: paymentIntentResponse.taxDollarAmount,
+                  totalDollarAmount: paymentIntentResponse.totalDollarAmount,
                }
                addTransactionToFirestore(orderData)
+               setConfirmPaymentButtonDisabled(false);
+               setShowProgressSpinner(false);
                history.push(HOME);
             }
          }
+      } else {
+         alert('There was an issue on our end. Please try again later!');   
+         handleDialogClose();
       }
       handleDialogClose();
    }
 
    useEffect(() => {
-      const setDraw = async () => {
-         let draw;
-         if (params.drawId) {
-            draw = await grabOneRaffleFromFirestore(params.drawId);
-            if (draw) setDrawData(draw);
-            const raffleImagesUrlArr = await getRaffleImagesFromStorage(params.drawId);
-            setDrawImageUrls(raffleImagesUrlArr);
-         }
-      }
-      setDraw();
-   }, [ params.drawId ])
+      const unsub = onSnapshot(doc(firestoreDb, 'raffles', params.drawId), async (doc) => {
+         const newDrawData = doc.data();
+         if (newDrawData) setDrawData(newDrawData);
+         const raffleImagesUrlArr = await getRaffleImagesFromStorage(params.drawId);
+         setDrawImageUrls(raffleImagesUrlArr);
+      })
+      return () => unsub();
+   }, [ setDrawData, params.drawId ])
 
    return (
       <>
-
          <NavigationBar />
          
          <div className={styles.contentContainer}>
 
             <div className={styles.mediaContainer}>
                <Card sx={{ maxWidth: 600 }}>
-                  {/* <CardActionArea> */}
                   <CardMedia
                      component="img"
                      height="140"
                      src={drawImageUrls[(drawImageUrls.length-1)]}
-                     alt="sneaker raffle"
+                     alt="sneaker draw"
                   />
-                  {/* </CardActionArea> */}
                </Card>
             </div>
             
@@ -208,23 +231,30 @@ const DrawDetailsScreen = () => {
                      />
                      <RemoveCircleOutlineIcon className={styles.icon} onClick={() => minusTicketClick()} />
                   </div>
-                  <Button sx={{ width: '60%', height: 45, fontSize: 20 }} className={styles.buyButton} onClick={() => handleClickDialogOpen()} variant="contained" disabled={buyButtonDisabled}>Buy</Button>
+                  <Button sx={{ width: '90%', height: 45, fontSize: 20 }} className={styles.enterDrawButton} onClick={() => handleClickDialogOpen()} variant="contained" disabled={enterDrawButtonDisabled}>
+                     Enter Draw
+                  </Button>
                </div>
 
                <div className={styles.raffleDetailsContainer}>
                   <Typography gutterBottom variant="h5" component="div">
                      {drawData.raffleSneakerBrand} {drawData.raffleSneakerName}
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                     {drawData.sneakerGender == 0 ? "Men's" : "Women's"}, Size: {drawData.raffleSneakerSize}
+                  <Typography gutterBottom variant="h6" component="div">
+                     <span className={styles.timeLeftFlag}>Time Left:</span>
+                     <span className={styles.timeLeft}>
+                        <CountdownTimer raffleExpirationDate={drawData.raffleExpirationDate} />
+                     </span>
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                     Price Per Ticket: ${drawData.pricePerRaffleTicket}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="subtitle1" >
                      Remaining tickets: {drawData.numRemainingRaffleTickets}
                   </Typography>
-                  
+                  <Typography variant="body1">
+                     {drawData.sneakerGender === 0 ? "Men's" : "Women's"}, Size: {drawData.raffleSneakerSize}
+                  </Typography>
+                  <Typography variant="body1">
+                     Price Per Ticket: ${drawData.pricePerRaffleTicket}
+                  </Typography>
                </div>
             </div>
                
@@ -234,11 +264,12 @@ const DrawDetailsScreen = () => {
                emailAddress={emailAddress}
                setEmailAddress={setEmailAddress}
                openDialog={openDialog}
-               handleClickDialogOpen={handleClickDialogOpen}
                handleDialogClose={handleDialogClose}
                amountOfTickets={amountOfTickets} 
                pricePerTicket={drawData.pricePerRaffleTicket}
-               buyButtonClick={buyButtonClick}
+               confirmPaymentButtonDisabled={confirmPaymentButtonDisabled}
+               showProgressSpinner={showProgressSpinner}
+               confirmPayButtonClick={confirmPayButtonClick}
             />
          </div>
 
@@ -253,13 +284,14 @@ interface DialogProps {
    emailAddress: string,
    setEmailAddress: (email: string) => void,
    openDialog: boolean,
-   handleClickDialogOpen: () => void,
    handleDialogClose: () => void,
    amountOfTickets: number,
    pricePerTicket: number,
-   buyButtonClick: () => void,
+   confirmPayButtonClick: () => void,
+   confirmPaymentButtonDisabled: boolean,
+   showProgressSpinner: boolean,
 }
-const FormDialog = ({nameOnCard, setNameOnCard, emailAddress, setEmailAddress, openDialog, handleClickDialogOpen, handleDialogClose, amountOfTickets, pricePerTicket, buyButtonClick}: DialogProps) => {
+const FormDialog = ({nameOnCard, setNameOnCard, emailAddress, setEmailAddress, openDialog, handleDialogClose, amountOfTickets, pricePerTicket, confirmPayButtonClick, confirmPaymentButtonDisabled, showProgressSpinner}: DialogProps) => {
    return (
       <div>
          <Dialog open={openDialog} onClose={handleDialogClose} fullWidth={true} maxWidth={'sm'}>
@@ -269,40 +301,43 @@ const FormDialog = ({nameOnCard, setNameOnCard, emailAddress, setEmailAddress, o
                   Total: ${amountOfTickets * pricePerTicket}
                </p>
 
-               <TextField
-                  sx={{ marginBottom: 2 }}
-                  autoFocus
-                  required
-                  margin="dense"
-                  id="email"
-                  label="Email Address"
-                  placeholder="Email where you'll get your receipt"
-                  type="email"
-                  fullWidth
-                  variant="standard"
-                  value={emailAddress}
-                  onChange={(e) => setEmailAddress(e.target.value)}
-               />
-               <TextField
-                  sx={{ marginTop: 0, marginBottom: 2 }}
-                  autoFocus
-                  required
-                  margin="dense"
-                  id="name"
-                  label="Name on Card"
-                  placeholder="Name on card used"
-                  type="text"
-                  fullWidth
-                  variant="standard"
-                  value={nameOnCard}
-                  onChange={(e) => setNameOnCard(e.target.value)}
-               />
-
+               { (showProgressSpinner) ? 
+               <p style={{textAlign: 'center'}}><CircularProgress sx={{margin: 0}}/></p>
+               :
+                  <>
+                     <TextField
+                        sx={{ marginBottom: 2 }}
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="email"
+                        label="Email Address"
+                        placeholder="Email where you'll get your receipt"
+                        type="email"
+                        fullWidth
+                        variant="standard"
+                        value={emailAddress}
+                        onChange={(e) => setEmailAddress(e.target.value)}
+                     />
+                     <TextField
+                        sx={{ marginTop: 0, marginBottom: 2 }}
+                        required
+                        margin="dense"
+                        id="name"
+                        label="Name on Card"
+                        placeholder="Name on card used"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={nameOnCard}
+                        onChange={(e) => setNameOnCard(e.target.value)}
+                     />
+                  </>
+               }               
                <CardElement className={styles.cardElement} />
-               
             </DialogContent>
             <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
-               <Button sx={{ width: '80%', fontSize: 18, backgroundColor: 'black', color: 'white', marginBottom: 3 }} type="submit" onClick={buyButtonClick}>Enter the Draw</Button>
+               <Button disabled={confirmPaymentButtonDisabled} sx={{ width: '80%', fontSize: 18, backgroundColor: 'black', color: 'white', marginBottom: 3 }} type="submit" onClick={confirmPayButtonClick}>Confirm Payment</Button>
             </DialogActions>
          </Dialog>
       </div>

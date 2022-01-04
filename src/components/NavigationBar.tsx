@@ -18,8 +18,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { NavLink } from "react-router-dom";
 
 
-import { HOME, LOGIN, ACCOUNT } from '../constants';
-// import { ADD_DRAW } from '../constants';
+import { HOME, LOGIN, ACCOUNT, FAQ } from '../constants';
+// import { START_SELLING, ADD_DRAW } from '../constants';
 
 const NavigationBar = () => {
    const { user, loggedIn } = useContext(AuthContext);
@@ -37,6 +37,10 @@ const NavigationBar = () => {
                   {/* <Button color="inherit">
                      <NavLink className={styles.navLink} to={ADD_DRAW}>Add Draw</NavLink>
                   </Button> */}
+
+                  <Button color="inherit">
+                     <NavLink className={styles.navLink} to={FAQ}>TF Is Drawww??</NavLink>
+                  </Button>
                   
                   {loggedIn ? 
                      <>

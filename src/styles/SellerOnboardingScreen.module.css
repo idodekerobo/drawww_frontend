@@ -1,0 +1,21 @@
+.container {
+   width: 90%;
+   margin: 50px auto;
+}
+.text {
+   margin-top: 80px;
+   margin-bottom: 80px;
+   text-align: center;
+}
+.link {
+   text-decoration: none;
+   color: rgb(206, 4, 4);
+}
+.link:hover {
+   color: black;
+   text-decoration: underline;
+}
+.link:active {
+   color: olive;
+   text-decoration: underline;
+}

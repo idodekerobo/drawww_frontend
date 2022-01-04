@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp, DocumentReference } from "firebase/firestore";
 import { User } from 'firebase/auth';
 
 export interface IAuthContextInterface {
@@ -17,6 +17,12 @@ export interface IUserData {
    state: string,
    zipCode: string,
    emailAddress?: string,
+   shoeGender: SneakerGender,
+   shoeSize: string,
+   buyerTransactions?: DocumentReference[],
+   sellerTransactions?: DocumentReference[],
+   sellerWaitlist?: boolean,
+   eligibleToOnboardToStripe?: boolean,
    sellerOnboardedToStripe?: SellerStripeOnboardingStatus,
    stripeAccountData?: IStripeUserData
 }
@@ -58,24 +64,31 @@ export interface IDrawDataFromFirestoreType extends IUserDrawData {
    raffleExpirationDate: Timestamp,
    raffleImageStoragePath: string,
    raffleImageDownloadUrls: string[],
+   transactions: DocumentReference[],
+   buyerTickets: string[],
 }
 
 export interface IAccountUrlParams {
-   accountId?: string,
+   accountId: string,
 }
 export interface IDrawUrlParams {
    drawId: string,
 }
 
-export interface IUserOrderObject {
+export interface IUserTransactionObject {
    sellerUserId: string,
    sellerStripeAcctId: string,
    stripePaymentIntentId: string,
    drawId :string,
    ticketsSold: number, 
    buyerUserId: string,
+   subtotalDollarAmount: number,
+   taxDollarAmount: number,
+   totalDollarAmount: number,
+   nameOnCard: string,
+   emailAddress: string,
 }
-export interface ITransactionFirestoreObject extends IUserOrderObject {
+export interface ITransactionFirestoreObject extends IUserTransactionObject {
    id: string,
    dateCompleted: Timestamp,
 }

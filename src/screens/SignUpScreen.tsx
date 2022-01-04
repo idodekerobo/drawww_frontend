@@ -60,6 +60,7 @@ const SignUpScreen = () => {
          <NavigationBar />
 
          <Container sx={{ width: ((windowWidth > 399) ? '60%' : '100%') }} className={styles.containerWrapper} maxWidth="xl">
+            <p>Please create an account!</p>
             <p>
                Already have an account? <Link className={styles.link} to={LOGIN}>Log in.</Link>
             </p>
@@ -68,7 +69,6 @@ const SignUpScreen = () => {
                   sx={{ marginBottom: 3 }}
                   required
                   type="email"
-                  id="outlined-required"
                   label="Email"
                   value={email}
                   placeholder="Email"
@@ -78,7 +78,6 @@ const SignUpScreen = () => {
                   sx={{ marginBottom: 3 }}
                   required
                   type="password"
-                  id="outlined-required"
                   label="Password"
                   placeholder="Password"
                   value={password}

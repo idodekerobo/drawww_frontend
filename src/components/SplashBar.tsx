@@ -3,12 +3,15 @@ import Typography from '@mui/material/Typography';
 
 import styles from '../styles/SplashBar.module.css'
 
-const SplashBar = () => {
+interface SplashBarProps {
+   splashBarText: string
+}
+const SplashBar = ({ splashBarText }: SplashBarProps) => {
    return (
       <>
          <Box className={styles.boxStyling}>
             <Typography variant="h6" component="div" >
-               Available Draws
+               {splashBarText}
             </Typography>
          </Box>
       </>

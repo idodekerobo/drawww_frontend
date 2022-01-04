@@ -19,30 +19,33 @@ import { CardActionArea } from '@mui/material';
 const DrawCard = ({ draw }: IDrawCardProps) => {
    const { windowWidth } = useWindowDimensions();
 
-   const expireDate = draw.raffleExpirationDate.toDate();
+   // const expireDate = draw.raffleExpirationDate.toDate();
    return (
       <Link className={styles.wrapper} to={`${DRAW}/${draw.id}`}>
          <Card className={styles.cardStyles} sx={{ width: ((windowWidth < 400) ? 140 : 220), height: 300, borderRadius: 0 }}>
             <CardActionArea>
                <CardMedia
                   component="img"
-                  sx={{ height: 140, }}
-                  src={draw.raffleImageDownloadUrls[0]}
+                  sx={{ height: 140 }}
+                  src={draw.raffleImageDownloadUrls[draw.raffleImageDownloadUrls.length-1]}
                   alt="raffle photo"
                />
                <CardContent sx={{bgcolor: '#fff', opacity: 1}}>
                   <Typography gutterBottom variant="button" component="div" sx={{fontWeight: 700, margin: 0}}>
                      {draw.raffleSneakerBrand}
                   </Typography>
-                  <Typography gutterBottom variant="button" component="div" sx={{fontWeight: 700, whiteSpace: 'nowrap' }}>
+                  <Typography gutterBottom variant="button" component="div" sx={{fontWeight: 700, whiteSpace: 'nowrap', textOverflow: "ellipsis", }}>
                      {draw.raffleSneakerName}
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                     {draw.active ? <span style={{color: 'green'}}>OPEN</span> : <span style={{color: 'red'}}>CLOSED</span>}
                   </Typography>
                   <Typography variant="body1" className={styles.boldedFont}>
                      ${draw.pricePerRaffleTicket}
                   </Typography>
-                  <Typography variant="body2">
+                  {/* <Typography variant="body2">
                      Closing: <span className={styles.boldedFont}>{`${expireDate.getMonth() + 1}/${expireDate.getDate()}/${expireDate.getFullYear()}`}</span>
-                  </Typography>
+                  </Typography> */}
                   <Typography variant="body2">
                      {draw.numRemainingRaffleTickets} tickets left
                   </Typography>

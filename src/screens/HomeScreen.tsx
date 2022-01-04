@@ -15,34 +15,41 @@ import styles from '../styles/HomeScreen.module.css';
 
 // material ui
 import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const HomeScreen = () => {
+   const [ loading, setLoading ] = useState<boolean>(true);
    const [ drawData, setDrawData ] = useState<IDrawDataFromFirestoreType[]>([])
 
    const getDrawDataFunc = async () => {
       const getDrawData = await grabRafflesFromFirestore();
       setDrawData(getDrawData);
+      setLoading(false);
    }
 
+   const draws = <>{(loading) ? 
+      <p style={{textAlign: 'center'}}><CircularProgress sx={{margin: 0}}/></p>
+      :
+      (drawData.length === 0) ?
+            <div className={styles.center}>
+               <p className={styles.font}>
+                  New draw's will be coming soon
+               </p>
+            </div>
+         :
+            drawData.map((draw) =>  <DrawCard draw={draw} key={draw.id} />)
+   }</>
+
    useEffect(() => {
-      // getDrawDataFunc();
+      getDrawDataFunc();
    }, [ ])
 
    return (
       <div className={styles.allComponentWrapper}>
          <NavigationBar />
-         <SplashBar />
+         <SplashBar splashBarText='Available Draws'/>
          <Container className={styles.containerWrapper} maxWidth="xl">
-            {drawData.map((draw) =>  <DrawCard draw={draw} key={draw.id} />) }
-            {(drawData.length == 0) ?
-               <div className={styles.center}>
-                  <p className={styles.font}>
-                     New draw's will be coming soon
-                  </p>
-               </div>
-            :
-               null
-            }
+            {draws}
          </Container>
       </div>
    )

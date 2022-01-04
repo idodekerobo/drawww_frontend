@@ -6,3 +6,5 @@ export const WELCOME = '/welcome';
 export const ACCOUNT = '/account';
 export const ADD_DRAW = '/add_draw';
 export const DRAW = '/draw';
+export const START_SELLING = '/start_selling'
+export const FAQ = '/faq';

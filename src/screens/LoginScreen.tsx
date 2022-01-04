@@ -22,30 +22,37 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const LoginScreen = () => {
-   // TODO - add user experience to sign up if no account
-
    const { windowWidth } = useWindowDimensions();
    const { loggedIn, logInFunction } = useContext(AuthContext);
-
+   
    const [ email, setEmail ] = useState<string>('')
    const [ password, setPassword ] = useState<string>('');
+   const [ loginButtonsDisabled, setLoginButtonsDisabled ] = useState(false);
 
    const onLoginClick = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      setLoginButtonsDisabled(true);
       const user = await loginWithFirebase(email, password);
       if (user) {
          setEmail('');
          setPassword('');
+         setLoginButtonsDisabled(false);
          logInFunction(user);
+      } else {
+         setLoginButtonsDisabled(false);
       }
    }
    
    const onSignInWithGoogleClick = async () => {
+      setLoginButtonsDisabled(true);
       const user = await signInWithGoogleAuth();
       if (user) {
          setEmail('');
          setPassword('');
+         setLoginButtonsDisabled(false);
          logInFunction(user);
+      } else {
+         setLoginButtonsDisabled(false);
       }
    }
 
@@ -60,6 +67,9 @@ const LoginScreen = () => {
          
          <Container sx={{ width: ((windowWidth > 399) ? '60%' : '100%') }} className={styles.containerWrapper} maxWidth="xl">
             <p>
+               Please sign in!
+            </p>
+            <p>
                No account? <Link className={styles.link} to={SIGN_UP}>Sign up.</Link>
             </p>
             <form className={styles.loginForm} onSubmit={onLoginClick}>
@@ -67,7 +77,6 @@ const LoginScreen = () => {
                   sx={{ marginBottom: 3 }}
                   required
                   type="email"
-                  id="outlined-required"
                   label="Email"
                   placeholder="Email"
                   value={email}
@@ -77,17 +86,16 @@ const LoginScreen = () => {
                   sx={{ marginBottom: 3 }}
                   required
                   type="password"
-                  id="outlined-required"
                   label="Password"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                />
 
-               <Button className={styles.loginButton} sx={{ marginBottom: 3, fontSize: 18, width: '100%' }} type="submit" variant="contained">Log In</Button>
+               <Button disabled={loginButtonsDisabled} className={styles.loginButton} sx={{ marginBottom: 3, fontSize: 18, width: '100%' }} type="submit" variant="contained">Log In</Button>
             </form>
             
-            <Button className={styles.loginButton} sx={{ marginBottom: 3, fontSize: 18, width: '100%' }} onClick={() => onSignInWithGoogleClick()} color='primary' variant="contained" >
+            <Button disabled={loginButtonsDisabled} className={styles.loginButton} sx={{ marginBottom: 3, fontSize: 18, width: '100%' }} onClick={() => onSignInWithGoogleClick()} color='primary' variant="contained" >
                Sign In With Google
             </Button>
 
