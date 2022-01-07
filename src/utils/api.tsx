@@ -69,6 +69,21 @@ export const signInWithGoogleAuth = async (): Promise<User | null> => {
       return null
    }
 }
+export const checkIfUserExistsInFirestore = async (userUid: string): Promise<boolean> => {
+   console.log('checking if user exists in db')
+   const userDocRef = doc(firestoreDb, userCollectionName, userUid);
+   try {
+      const userDataSnapshot = await getDoc(userDocRef);
+      if (userDataSnapshot.exists()) {
+         return true;
+      } 
+      return false;
+   } catch (err) {
+      console.log('error checking for user on firestore');
+      console.log(err);
+      return false;
+   }
+}
 // separate function for sign up flow because we have to add the new user to the firestore on new sign up
 export const signUpWithGoogleAuth = async (): Promise<User | null> => {
    try {
@@ -117,7 +132,7 @@ const raffleCollectionName = 'raffles';
 const txnRaffleCollectionName = 'transactions';
 const sellerWaitlistCollectionName = 'sellerWaitlist';
 
-const addNewUserToFirestore = async (userUid: string, emailAddress: string | null) => {
+export const addNewUserToFirestore = async (userUid: string, emailAddress: string | null) => {
    console.log('adding new user to firestore');
    try {
       await setDoc(doc(firestoreDb, userCollectionName, userUid), {

@@ -2,12 +2,12 @@
 import React, { useContext, useState } from 'react';
 
 // react router
-import { Redirect, Link } from "react-router-dom";
+import { useHistory, Redirect, Link } from "react-router-dom";
 
 // utilities
-import { loginWithFirebase, signInWithGoogleAuth } from '../utils/api';
+import { loginWithFirebase, signInWithGoogleAuth, checkIfUserExistsInFirestore, addNewUserToFirestore } from '../utils/api';
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { HOME, SIGN_UP } from '../constants';
+import { HOME, SIGN_UP, WELCOME } from '../constants';
 import { useWindowDimensions } from '../utils/hooks';
 
 // custom components
@@ -22,6 +22,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const LoginScreen = () => {
+   const history = useHistory();
    const { windowWidth } = useWindowDimensions();
    const { loggedIn, logInFunction } = useContext(AuthContext);
    
@@ -47,10 +48,21 @@ const LoginScreen = () => {
       setLoginButtonsDisabled(true);
       const user = await signInWithGoogleAuth();
       if (user) {
-         setEmail('');
-         setPassword('');
-         setLoginButtonsDisabled(false);
-         logInFunction(user);
+         const userExistsInDb = await checkIfUserExistsInFirestore(user.uid);
+         console.log('user exists??', userExistsInDb)
+         if (!userExistsInDb) {
+            addNewUserToFirestore(user.uid, user.email);
+            setEmail('');
+            setPassword('');
+            setLoginButtonsDisabled(false);
+            logInFunction(user);
+            history.push(WELCOME);
+         } else {
+            setEmail('');
+            setPassword('');
+            setLoginButtonsDisabled(false);
+            logInFunction(user);
+         }
       } else {
          setLoginButtonsDisabled(false);
       }
