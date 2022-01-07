@@ -48,6 +48,11 @@ const UpdateProfileInfoForm = () => {
          alert(`Profile wasn't able to update! Please try again later.`);
       }
    }
+   const shoeSizeInputProps = {
+      inputMode: "numeric",
+      step: 0.5,
+      // pattern: '[0-9]*'
+   };
 
    useEffect(() => {
       if (!user) return;
@@ -80,7 +85,7 @@ const UpdateProfileInfoForm = () => {
             <FormControlLabel sx={{marginRight: 0, marginLeft: 2}} value={0} control={<Radio />} label="Men's" />
          </RadioGroup>
 
-         <TextField sx={{ marginBottom: 3 }} label="Shoe Size" placeholder="Shoe Size" type="number" variant="outlined" value={shoeSize} onChange={(e) => setShoeSize(e.target.value)} />
+         <TextField sx={{ marginBottom: 3 }} label="Shoe Size" placeholder="Shoe Size" inputProps={{ inputMode: 'decimal', step:0.5, pattern: "[0-9]+([.][0-9]+)?" }} type="number" variant="outlined" value={shoeSize} onChange={(e) => setShoeSize(e.target.value)} />
 
          <Button sx={{ marginBottom: 3, fontSize: 18, width: '100%' }} type="submit" variant="contained">Update Profile</Button>
       </form>
