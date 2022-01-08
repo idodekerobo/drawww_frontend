@@ -1,5 +1,5 @@
 import { firebaseAuth, googleAuthProvider, firestoreDb, firebaseStorage } from './firebase';
-import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IStripeUserData, IUserTransactionObject, ITransactionFirestoreObject } from './types'
+import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IStripeUserData, IUserTransactionObject, ITransactionFirestoreObject, IDrawTicket } from './types'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
    signInWithPopup, updateProfile, User,
 } from 'firebase/auth';
@@ -70,7 +70,6 @@ export const signInWithGoogleAuth = async (): Promise<User | null> => {
    }
 }
 export const checkIfUserExistsInFirestore = async (userUid: string): Promise<boolean> => {
-   console.log('checking if user exists in db')
    const userDocRef = doc(firestoreDb, userCollectionName, userUid);
    try {
       const userDataSnapshot = await getDoc(userDocRef);
@@ -128,7 +127,7 @@ export const updateUserProfileData = (user: User, userDisplayName: string | null
 
 // FIRE STORE UPDATES
 const userCollectionName = 'users';
-const raffleCollectionName = 'raffles';
+export const raffleCollectionName = 'draws';
 const txnRaffleCollectionName = 'transactions';
 const sellerWaitlistCollectionName = 'sellerWaitlist';
 
@@ -175,7 +174,21 @@ export const updateUserWhenOnboardedToStripe = async (userUid: string, stripeUse
       console.log(err)
    }
 }
+const createTicketsToAddDraw = (raffleId: string, numTickets: number): IDrawTicket[] => {
+   // get raffle doc reference
+   let arrayOfTickets: IDrawTicket[] = [ ];
 
+   for (let i=1; i <= numTickets; i++) {
+      const ticket = {
+         id: `${i}`,
+         number: i,
+         status: 0,
+         raffleId,
+      }
+      arrayOfTickets.push(ticket);
+   }
+   return arrayOfTickets;
+}
 export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IUserDrawData, raffleImages: FileList | null): Promise<boolean> => {
    
    const timeRaffleCreated: Timestamp = Timestamp.now()
@@ -188,6 +201,7 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
 
    try {
       const newRaffleRef = doc(collection(firestoreDb, raffleCollectionName));
+      const tickets = createTicketsToAddDraw(newRaffleRef.id, raffleDataObject.numTotalRaffleTickets)
       const data: IDrawDataFromFirestoreType = {
          ...raffleDataObject,
          // add default object values
@@ -195,6 +209,7 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
          active: true,
          numRemainingRaffleTickets: raffleDataObject.numTotalRaffleTickets,
          soldRaffleTickets: 0,
+         tickets,
          raffleType: 'sneakers',
          timeRaffleCreated,
          raffleExpirationDate: expireDate,
@@ -347,6 +362,14 @@ export const addTransactionToFirestore = async (orderData: IUserTransactionObjec
          await addListOfBuyerIdToDrawObject(drawId, buyerUserId, ticketsSold);
       } catch (err) {
          console.log('error checking for unique buyer id to add to draw object');
+         console.log(err);
+      }
+
+      try {
+         await updateTicketsAfterTxn(drawId, ticketsSold, buyerUserId, newTxnRef.id);
+      } catch (err) {
+         console.log('error updating ticket array in draw object');
+         console.log(err);
       }
    } catch (err) {
       console.log('err adding completed transaction to the firestore')
@@ -354,15 +377,56 @@ export const addTransactionToFirestore = async (orderData: IUserTransactionObjec
    }
 }
 
-export const updateTicketsAvailableInRaffle = async (raffleId: string, ticketsSold: number, ticketsRemaining: number) => {
+export const updateTicketsAvailableInRaffle = async (raffleId: string, ticketsSold: number, ticketsRemaining: number, ticketsSoldAlready: number) => {
+   const soldRaffleTickets = ticketsSoldAlready + ticketsSold;
    try {
-      const raffleRef = doc(firestoreDb, raffleCollectionName, raffleId);
-      await updateDoc(raffleRef, {
+      const drawRef = doc(firestoreDb, raffleCollectionName, raffleId);
+      await updateDoc(drawRef, {
          numRemainingRaffleTickets: ticketsRemaining,
-         soldRaffleTickets: ticketsSold,
+         soldRaffleTickets,
       })
    } catch (err) {
       console.log('err updating the raffle in the firestore')
+      console.log(err);
+   }
+}
+export const updateTicketsAfterTxn = async (raffleId: string, numTicketsToUpdate: number, buyerId: string, txnId: string) => {
+   // get draw object
+   const drawRef = doc(firestoreDb, raffleCollectionName, raffleId);
+   try {
+      const drawSnapshot = await getDoc(drawRef);
+      if (drawSnapshot.exists()) {
+         const drawData = drawSnapshot.data() as IDrawDataFromFirestoreType;
+         // existing tickets obj array
+         let newTicketsObj = drawData.tickets;
+         let ticketsUpd = 0;
+         
+         for (let i=0; i < newTicketsObj.length; i++) {
+            let checkTicket = newTicketsObj[i];
+            if (checkTicket.status === 1) continue; // if ticket is sold skip to next iteration
+
+            if (checkTicket.status === 0) {
+               checkTicket.status = 1;
+               checkTicket.buyerId = buyerId;
+               checkTicket.transactionId = txnId;
+               ticketsUpd += 1;
+            }
+            if (ticketsUpd === numTicketsToUpdate) break; // if you've updated the needed amount of tickets break for loop
+         }
+
+         // update draw object w/ new ticket data
+         try {
+            await updateDoc(drawRef, {
+               tickets: newTicketsObj,
+            });
+         } catch (err) {
+            console.log('err updating draw data w/ new ticket data');
+            console.log(err);
+         }
+
+      }
+   } catch (err) {
+      console.log('draw object doesn\'t exist');
       console.log(err);
    }
 }
@@ -374,7 +438,6 @@ export const addListOfBuyerIdToDrawObject = async (drawId: string, buyerId: stri
       
       let addToArr: string[] = [];
       for (let i=0; i < ticketsSold; i++) {
-         console.log(`adding buyer id to arr for ${i} time`)
          addToArr.push(buyerId);
       }
 
@@ -383,7 +446,6 @@ export const addListOfBuyerIdToDrawObject = async (drawId: string, buyerId: stri
       
       if (buyerTicketArr) {
          const newArr = [...buyerTicketArr, ...addToArr];
-         console.log(newArr);
             await updateDoc(doc(firestoreDb, raffleCollectionName, drawId), {
                buyerTickets: newArr
             });

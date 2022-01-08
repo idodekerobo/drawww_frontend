@@ -57,15 +57,28 @@ export interface IUserDrawData {
 export interface IDrawDataFromFirestoreType extends IUserDrawData {
    id: string,
    active: boolean,
+   raffleType: string,
+   tickets: IDrawTicket[],
    numRemainingRaffleTickets: number,
    soldRaffleTickets: number,
-   raffleType: string,
    timeRaffleCreated: Timestamp,
    raffleExpirationDate: Timestamp,
    raffleImageStoragePath: string,
    raffleImageDownloadUrls: string[],
    transactions: DocumentReference[],
    buyerTickets: string[],
+}
+export interface IDrawTicket {
+   id: string,
+   number: number,
+   status: ITicketStatus,
+   raffleId: string,
+   buyerId?: string,
+   transactionId?: string,
+}
+enum ITicketStatus {
+   "available" = 0,
+   "sold" = 1,
 }
 
 export interface IAccountUrlParams {

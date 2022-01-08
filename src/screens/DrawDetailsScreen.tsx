@@ -14,7 +14,7 @@ import { useParams, useHistory } from "react-router-dom";
 import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
-import { BACKEND_URL, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
+import { BACKEND_URL, raffleCollectionName, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
 import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserTransactionObject } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { HOME, LOGIN } from '../constants';
@@ -159,14 +159,14 @@ const DrawDetailsScreen = () => {
             if (paymentResult.paymentIntent.status === 'succeeded') {
                alert('Thank you! Payment successfully went through!');
 
-               updateTicketsAvailableInRaffle(drawId, paymentIntentResponse.ticketsSold, paymentIntentResponse.ticketsRemaining);
+               updateTicketsAvailableInRaffle(drawId, paymentIntentResponse.newTicketsSold, paymentIntentResponse.ticketsRemaining, paymentIntentResponse.ticketsSoldAlready);
                
                const orderData: IUserTransactionObject = {
                   nameOnCard,
                   emailAddress,
                   stripePaymentIntentId: paymentIntentResponse.id,
                   sellerStripeAcctId: paymentIntentResponse.sellerStripeAcctId,
-                  ticketsSold: paymentIntentResponse.ticketsSold,
+                  ticketsSold: paymentIntentResponse.newTicketsSold,
                   sellerUserId: paymentIntentResponse.sellerUserId,
                   drawId,
                   buyerUserId: user.uid,
@@ -189,7 +189,7 @@ const DrawDetailsScreen = () => {
    }
 
    useEffect(() => {
-      const unsub = onSnapshot(doc(firestoreDb, 'raffles', params.drawId), async (doc) => {
+      const unsub = onSnapshot(doc(firestoreDb, raffleCollectionName, params.drawId), async (doc) => {
          const newDrawData = doc.data();
          if (newDrawData) setDrawData(newDrawData);
          const raffleImagesUrlArr = await getRaffleImagesFromStorage(params.drawId);
