@@ -49,7 +49,6 @@ const LoginScreen = () => {
       const user = await signInWithGoogleAuth();
       if (user) {
          const userExistsInDb = await checkIfUserExistsInFirestore(user.uid);
-         console.log('user exists??', userExistsInDb)
          if (!userExistsInDb) {
             addNewUserToFirestore(user.uid, user.email);
             setEmail('');

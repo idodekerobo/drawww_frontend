@@ -113,6 +113,7 @@ const AddDrawScreen = () => {
                   sx={{ marginBottom: 3 }}
                   required
                   type="number"
+                  inputProps={{ inputMode: 'decimal', step:0.5, pattern: "[0-9]+([.][0-9]+)?" }}
                   id="outlined-required"
                   label="Shoe Size"
                   placeholder="Size"

@@ -48,11 +48,6 @@ const UpdateProfileInfoForm = () => {
          alert(`Profile wasn't able to update! Please try again later.`);
       }
    }
-   const shoeSizeInputProps = {
-      inputMode: "numeric",
-      step: 0.5,
-      // pattern: '[0-9]*'
-   };
 
    useEffect(() => {
       if (!user) return;
