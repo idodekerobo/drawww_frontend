@@ -62,6 +62,7 @@ const DrawDetailsScreen = () => {
    const [drawData, setDrawData] = useState<IDrawDataFromFirestoreType | DocumentData>(initDrawState)
    const [ drawImageUrls, setDrawImageUrls ] = useState(initDrawUrlArr);
    const [amountOfTickets, setAmountOfTickets] = useState(1);
+   const [ chances, setChances ] = useState(0);
 
    const [ nameOnCard, setNameOnCard ] = useState('');
    const [ emailAddress, setEmailAddress ] = useState('');
@@ -198,6 +199,12 @@ const DrawDetailsScreen = () => {
       return () => unsub();
    }, [ setDrawData, params.drawId ])
 
+   useEffect(() => {
+      if (!drawData) return;
+      const chances: number = ( (1 / drawData.numTotalRaffleTickets)*100 );
+      setChances(chances);
+   }, [ drawData ])
+
    return (
       <>
          <NavigationBar />
@@ -254,6 +261,9 @@ const DrawDetailsScreen = () => {
                   </Typography>
                   <Typography variant="body1">
                      Price Per Ticket: ${drawData.pricePerRaffleTicket}
+                  </Typography>
+                  <Typography variant="body1">
+                     1 Ticket = {chances}% Chance To Win
                   </Typography>
                </div>
             </div>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 // context/api/utils
 import { DRAW } from '../constants';
 import { IDrawCardProps } from '../utils/types';
-import { useWindowDimensions } from "../utils/hooks";
+// import { useWindowDimensions } from "../utils/hooks";
 
 // styling
 import styles from '../styles/DrawCard.module.css';
@@ -17,12 +17,13 @@ import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 
 const DrawCard = ({ draw }: IDrawCardProps) => {
-   const { windowWidth } = useWindowDimensions();
+   // const { windowWidth } = useWindowDimensions();
 
    // const expireDate = draw.raffleExpirationDate.toDate();
    return (
       <Link className={styles.wrapper} to={`${DRAW}/${draw.id}`}>
-         <Card className={styles.cardStyles} sx={{ width: ((windowWidth < 400) ? 140 : 220), height: 300, borderRadius: 0 }}>
+         {/* <Card className={styles.cardStyles} sx={{ width: ((windowWidth < 400) ? 220 : 280), height: 300, borderRadius: 0 }}> */}
+         <Card className={styles.cardStyles} sx={{ width: 220, height: 300, borderRadius: 0 }}>
             <CardActionArea>
                <CardMedia
                   component="img"
