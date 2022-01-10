@@ -17,7 +17,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 // react router
 import { NavLink } from "react-router-dom";
 
-
+import logo from '../img/drawww.png';
 import { HOME, LOGIN, ACCOUNT, FAQ } from '../constants';
 // import { START_SELLING, ADD_DRAW } from '../constants';
 
@@ -31,7 +31,9 @@ const NavigationBar = () => {
             <AppBar position="static" color="transparent">
                <Toolbar>
                   <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                     <NavLink className={styles.navLink} to={HOME}>Drawww</NavLink>
+                     <NavLink className={styles.navLink} to={HOME}>
+                        <img className={styles.navLogo} src={logo} alt="logo"/>
+                     </NavLink>
                   </Typography>
 
                   {/* <Button color="inherit">
