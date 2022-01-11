@@ -14,7 +14,7 @@ import { useParams, useHistory } from "react-router-dom";
 import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
-import { BACKEND_URL, raffleCollectionName, getRaffleImagesFromStorage, updateTicketsAvailableInRaffle, addTransactionToFirestore, } from '../utils/api';
+import { BACKEND_URL, raffleCollectionName, getRaffleImagesFromStorage } from '../utils/api';
 import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserTransactionObject } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { HOME, LOGIN } from '../constants';
@@ -154,13 +154,10 @@ const DrawDetailsScreen = () => {
          if (paymentResult.error) {
             alert(`There was an error, please try again later. ${paymentResult.error.message}`);
             handleDialogClose()
-            console.log('error with the payment')
-            console.log(paymentResult.error.message)
+            // console.log('error with the payment')
+            // console.log(paymentResult.error.message)
          } else {
             if (paymentResult.paymentIntent.status === 'succeeded') {
-               alert('Thank you! Payment successfully went through!');
-
-               updateTicketsAvailableInRaffle(drawId, paymentIntentResponse.newTicketsSold, paymentIntentResponse.ticketsRemaining, paymentIntentResponse.ticketsSoldAlready);
                
                const orderData: IUserTransactionObject = {
                   nameOnCard,
@@ -176,7 +173,22 @@ const DrawDetailsScreen = () => {
                   taxDollarAmount: paymentIntentResponse.taxDollarAmount,
                   totalDollarAmount: paymentIntentResponse.totalDollarAmount,
                }
-               addTransactionToFirestore(orderData)
+               const POST_TXN_LOGIC_URL = `${BACKEND_URL}/checkout/${drawId}/success`;
+               const postTxnLogicResp = fetch(POST_TXN_LOGIC_URL, {
+                  method: 'POST',
+                  headers: {
+                     'Content-type': 'application/json'
+                  },
+                  body: JSON.stringify({ 
+                     orderData,
+                     ticketsRemaining: paymentIntentResponse.ticketsRemaining,
+                     ticketsSoldAlready: paymentIntentResponse.ticketsSoldAlready
+                  })
+               })
+               if (response.status >= 400) {
+                  // TODO - run some retry logic here
+               }
+               alert('Thank you! Payment successfully went through!');
                setConfirmPaymentButtonDisabled(false);
                setShowProgressSpinner(false);
                history.push(HOME);
