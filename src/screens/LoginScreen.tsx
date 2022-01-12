@@ -12,6 +12,7 @@ import { useWindowDimensions } from '../utils/hooks';
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
+import Footer from '../components/Footer';
 
 // styles
 import styles from '../styles/LoginScreen.module.css'
@@ -111,6 +112,9 @@ const LoginScreen = () => {
             </Button>
 
          </Container>
+         <div style={{marginTop: 25, marginBottom: 25 }}>
+            <Footer />
+         </div>
       </>
    )
 }

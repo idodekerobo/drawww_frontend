@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 // components
 import NavigationBar from '../components/NavigationBar';
+import Footer from '../components/Footer';
 import SplashBar from '../components/SplashBar';
 import DrawCard from '../components/DrawCard';
 
@@ -51,6 +52,9 @@ const HomeScreen = () => {
          <Container className={styles.containerWrapper} maxWidth="xl">
             {draws}
          </Container>
+         <div style={{marginTop: 100, marginBottom: 100 }}>
+            <Footer />
+         </div>
       </div>
    )
 }

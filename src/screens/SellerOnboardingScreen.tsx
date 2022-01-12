@@ -11,6 +11,7 @@ import { HOME } from '../constants';
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
+import Footer from '../components/Footer';
 import SplashBar from '../components/SplashBar';
 import styles from '../styles/SellerOnboardingScreen.module.css';
 
@@ -47,6 +48,9 @@ const SellerOnboardingScreen = () => {
          <div className={styles.container}>
             {message}
             <p className={`${styles.text} ${styles.link}`}><Link className={`${styles.link}`} to={HOME}>Back to home.</Link></p>
+         </div>
+         <div style={{marginTop: 25, marginBottom: 25 }}>
+            <Footer />
          </div>
       </div>
    )

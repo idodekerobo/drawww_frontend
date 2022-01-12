@@ -6,6 +6,7 @@ import { HOME } from '../constants';
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
+import Footer from '../components/Footer';
 
 // styles
 import styles from '../styles/ErrorScreen.module.css';
@@ -23,6 +24,9 @@ const ErrorScreen = () => {
                Ahhh we messed up. Please go back to the homepage by clicking <Link className={styles.link} to={HOME}>here</Link>.
             </p>
          </Container>
+         <div style={{marginTop: 25, marginBottom: 25 }}>
+            <Footer />
+         </div>
       </>
    )
 }

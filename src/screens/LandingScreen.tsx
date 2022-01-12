@@ -65,10 +65,10 @@ const LandingScreen = () => {
                   <p className={`${styles.infoText}`}>win draws, pay less</p>
                   <p className={`${styles.infoText}`}>host your own draws</p>
                   <div className={styles.iconContainer}>
-                     <a className={styles.iconWrapperATag} href="https://www.instagram.com/drawww.xyz/">
+                     <a href="https://www.instagram.com/drawww.xyz/">
                         <InstagramIcon className={styles.icon} />
                      </a>
-                     <a className={styles.iconWrapperATag} href="https://twitter.com/drawwwxyz">
+                     <a href="https://twitter.com/drawwwxyz">
                         <TwitterIcon className={styles.icon} />
                      </a>
                   </div>

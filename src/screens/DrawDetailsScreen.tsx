@@ -8,6 +8,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 // custom components
 import NavigationBar from "../components/NavigationBar";
 import CountdownTimer from '../components/CountdownTimer';
+import Footer from '../components/Footer';
 import { useParams, useHistory } from "react-router-dom";
 
 // styles
@@ -293,6 +294,9 @@ const DrawDetailsScreen = () => {
                showProgressSpinner={showProgressSpinner}
                confirmPayButtonClick={confirmPayButtonClick}
             />
+         </div>
+         <div style={{marginTop: 5, marginBottom: 5 }}>
+            <Footer />
          </div>
 
       </>

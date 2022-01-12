@@ -6,6 +6,7 @@ import { useHistory, Redirect, Link } from "react-router-dom";
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
+import Footer from '../components/Footer';
 
 // api/utils
 import { WELCOME, HOME, LOGIN } from '../constants';
@@ -91,6 +92,9 @@ const SignUpScreen = () => {
                Sign Up With Google
             </Button>
          </Container>
+         <div style={{marginTop: 25, marginBottom: 25 }}>
+            <Footer />
+         </div>
       </>
    )
 }

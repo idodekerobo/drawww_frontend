@@ -10,6 +10,7 @@ import { HOME } from "../constants";
 
 // custom components
 import NavigationBar from "../components/NavigationBar";
+import Footer from "../components/Footer";
 import UpdateProfileInfoForm from "../components/UpdateProfileInfoForm";
 import LoadingScreen from "./LoadingScreen";
 
@@ -82,6 +83,9 @@ const AccountScreen = () => {
 
             <Button sx={{ marginBottom: 3, width: 300}} onClick={() => onlogOutButtonClick()} variant="contained">Log Out</Button>
 
+         </div>
+         <div style={{marginTop: 25, marginBottom: 25 }}>
+            <Footer />
          </div>
          
       </div>
