@@ -24,6 +24,7 @@ const FaqScreen = () => {
    const [ q3Visible, setQ3Visible ] = useState(false);
    const [ q4Visible, setQ4Visible ] = useState(false);
    const [ q5Visible, setQ5Visible ] = useState(false);
+   const [ q6Visible, setQ6Visible ] = useState(false);
 
    const question1 = <>{(q1Visible) ? 
       <ul>
@@ -66,6 +67,14 @@ const FaqScreen = () => {
    const question5 = <>{(q5Visible) ?
       <ul>
          <li>There are 3 W's because you will get W's on Drawww. This is not the SNKRS app.</li>
+      </ul>
+   :
+      null
+   }</>
+   
+   const question6 = <>{(q6Visible) ?
+      <ul>
+         <li>You can reach out to the drawww <a className={styles.contactLinks} href="https://www.instagram.com/drawww.xyz/">instagram</a> account, <a className={styles.contactLinks} href="https://twitter.com/drawwwxyz">twitter</a> account, or email <a className={styles.contactLinks} href="mailto:idode.kerobo@gmail.com">idode.kerobo@gmail.com</a>.</li>
       </ul>
    :
       null
@@ -121,6 +130,15 @@ const FaqScreen = () => {
                      </Button>
                   </li>
                   {question5}
+               </div>
+
+               <div className={styles.questionContainer}>
+                  <li>
+                     <Button sx={{marginBottom: 0, width: 260}} variant="contained" onClick={() => setQ6Visible(!q6Visible)}>
+                        I still have questions?
+                     </Button>
+                  </li>
+                  {question6}
                </div>
 
             </ol>

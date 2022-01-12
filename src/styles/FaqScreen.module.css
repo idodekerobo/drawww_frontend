@@ -17,8 +17,18 @@ ul {
 .faqContainer {
    width: 90%;
    margin: 50px auto;
+   margin-bottom: 150px;
 }
 .link {
    text-decoration: none;
    color: white;
+}
+
+.contactLinks {
+   text-decoration: underline;
+   color: black;
+   font-weight: bolder;
+}
+.contactLinks:hover {
+   color: red;
 }
