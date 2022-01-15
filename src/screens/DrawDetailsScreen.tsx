@@ -295,6 +295,11 @@ const DrawDetailsScreen = () => {
                confirmPayButtonClick={confirmPayButtonClick}
             />
          </div>
+         <div className={styles.disclaimerContainer}>
+            <p className={styles.disclaimerTitle}>*Please read*</p>
+            <p className={styles.disclaimerBody}>The winner will be chosen live on Drawww's instagram page on Monday, 1/17/22 at 10am EST.</p>
+            <p className={styles.disclaimerBody}>When you purchase you will receive an email with your ticket number, please save that email to redeem your ticket.</p>
+         </div>
          <div style={{marginTop: 5, marginBottom: 5 }}>
             <Footer />
          </div>

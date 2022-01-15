@@ -58,6 +58,20 @@
 .timeLeft {
    color: rgb(199, 4, 4);
 }
+
+.disclaimerContainer {
+   width: 85%;
+   margin: -60px auto 0 auto;
+   text-align: center;
+}
+.disclaimerTitle {
+   font-weight: 800;
+   margin-bottom: 5px;
+}
+.disclaimerBody {
+   margin: 0;
+   padding: 0;
+}
 /* BUY DRAW TICKETS MODAL FORM */
 .totalPriceText {
    margin: 0;
