@@ -11,6 +11,10 @@ const CountdownTimer = ({ raffleExpirationDate }: CountdownTimerProps) => {
    useEffect(() => {
       const countdown = setInterval(() => {
          const timeNow = new Date();
+         if (timeNow.getTime() > raffleExpirationDate.toMillis()) {
+            setTimeLeft('CLOSED');
+            return;
+         }
          const remaining = raffleExpirationDate.toMillis() - timeNow.getTime();
          const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
          const hours = Math.floor( (remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60) );
