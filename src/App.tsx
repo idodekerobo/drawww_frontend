@@ -9,7 +9,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import AccountScreen from './screens/AccountScreen';
 import AddDrawScreen from './screens/AddDrawScreen';
 import DrawDetailsScreen from './screens/DrawDetailsScreen'
-import LandingScreen from './screens/LandingScreen';
+import LandingScreen, { EmailSignUpPage } from './screens/LandingScreen';
 import PrivateRouteWrapper from './screens/PrivateRouteWrapper';
 import LoadingScreen from './screens/LoadingScreen';
 import SellerOnboarding from './screens/SellerOnboardingScreen';
@@ -22,7 +22,7 @@ import { Switch, Route, useLocation, Redirect } from "react-router-dom";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ } from './constants'
+import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE } from './constants'
 import { STRIPE_PUBLISHABLE_TEST_KEY, STRIPE_PUBLISHABLE_LIVE_KEY } from './utils/api';
 
 // const stripePromise = loadStripe(STRIPE_PUBLISHABLE_TEST_KEY);
@@ -88,6 +88,10 @@ function App() {
 
             <Route exact path={LANDING}>
                <LandingScreen />
+            </Route>
+
+            <Route path={EMAIL_LIST_PAGE}>
+               <EmailSignUpPage />
             </Route>
 
             <Route path={'/404'}>

@@ -8,3 +8,4 @@ export const ADD_DRAW = '/add_draw';
 export const DRAW = '/draw';
 export const START_SELLING = '/start_selling'
 export const FAQ = '/faq';
+export const EMAIL_LIST_PAGE = '/email-list';

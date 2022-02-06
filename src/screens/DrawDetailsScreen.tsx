@@ -119,6 +119,7 @@ const DrawDetailsScreen = () => {
          setAmountOfTickets(1);
          return;
       };
+      // TODO - stop transaction if the time is expired
       const drawId = params.drawId;
       const CHECKOUT_URL = `${BACKEND_URL}/checkout/${drawId}`
 

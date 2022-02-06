@@ -19,8 +19,17 @@ import sneak from '../img/pix_sneak.png'
 
 const LandingScreen = () => {
    const { loggedIn } = useContext(AuthContext);
+
+   if (loggedIn) {
+      return <Redirect to={HOME} />
+   }
+   return <EmailSignUpPage />
+}
+export default LandingScreen;
+
+export const EmailSignUpPage = () => {
    const history = useHistory();
-   const [userEmail, setEmail] = useState('');
+   const [ userEmail, setEmail ] = useState('');
    const [ signedUp, setSignedUp ] = useState(false);
 
    const onSkipClick = () => {
@@ -42,9 +51,6 @@ const LandingScreen = () => {
       });
    }
 
-   if (loggedIn) {
-      return <Redirect to={HOME} />
-   }
    return (
       <div className={styles.container}>
          <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
@@ -90,4 +96,3 @@ const LandingScreen = () => {
       </div>
    )
 }
-export default LandingScreen;
