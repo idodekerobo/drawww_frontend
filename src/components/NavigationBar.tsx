@@ -18,7 +18,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { NavLink } from "react-router-dom";
 
 import logo from '../img/drawww.png';
-import { HOME, LOGIN, ACCOUNT, FAQ } from '../constants';
+import { HOME, LOGIN, ACCOUNT, FAQ, BLOG } from '../constants';
 // import { START_SELLING, ADD_DRAW } from '../constants';
 
 const NavigationBar = () => {
@@ -39,6 +39,10 @@ const NavigationBar = () => {
                   {/* <Button color="inherit">
                      <NavLink className={styles.navLink} to={ADD_DRAW}>Add Draw</NavLink>
                   </Button> */}
+                  
+                  <Button color="inherit">
+                     <NavLink className={styles.navLink} to={BLOG}>Blog</NavLink>
+                  </Button>
 
                   <Button color="inherit">
                      <NavLink className={styles.navLink} to={FAQ}>TF Is Drawww??</NavLink>
