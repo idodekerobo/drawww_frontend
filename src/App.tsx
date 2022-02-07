@@ -15,6 +15,7 @@ import LoadingScreen from './screens/LoadingScreen';
 import SellerOnboarding from './screens/SellerOnboardingScreen';
 import FaqScreen from './screens/FaqScreen';
 import ErrorScreen from './screens/ErrorScreen';
+import BlogScreen from './screens/BlogScreen';
 
 // react router
 import { Switch, Route, useLocation, Redirect } from "react-router-dom";
@@ -22,7 +23,7 @@ import { Switch, Route, useLocation, Redirect } from "react-router-dom";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE } from './constants'
+import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE, BLOG } from './constants'
 import { STRIPE_PUBLISHABLE_TEST_KEY, STRIPE_PUBLISHABLE_LIVE_KEY } from './utils/api';
 
 // const stripePromise = loadStripe(STRIPE_PUBLISHABLE_TEST_KEY);
@@ -94,6 +95,10 @@ function App() {
                <EmailSignUpPage />
             </Route>
 
+            <Route path={BLOG}>
+               <BlogScreen />
+            </Route>
+            
             <Route path={'/404'}>
                <ErrorScreen />
             </Route>

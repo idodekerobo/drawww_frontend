@@ -9,3 +9,4 @@ export const DRAW = '/draw';
 export const START_SELLING = '/start_selling'
 export const FAQ = '/faq';
 export const EMAIL_LIST_PAGE = '/email-list';
+export const BLOG = '/blog';
