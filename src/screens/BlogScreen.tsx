@@ -1,5 +1,6 @@
 // react
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 
 // components
@@ -27,6 +28,11 @@ const BlogScreen = () => {
 
    return (
       <div className={styles.allComponentWrapper}>
+         <Helmet>
+            <title>How To Cop Union LA Nike Low Dunks | Drawww</title>
+            <meta name="description" content="Union LA Nike Dunk Low Passport Pack Pistachio Release Info" />
+            <link rel="canonical" href="https://www.drawww.xyz/blog" />
+         </Helmet>
          <NavigationBar />
          <SplashBar splashBarText='Blog' />
 
@@ -60,8 +66,8 @@ const BlogScreen = () => {
                <div className={styles.ctaContainer}>
                   <p>
                      Drawww is a platform where you can buy raffle tickets for all types of sneaker heat.
-                     <br/>
-                     <br/>
+                     <br />
+                     <br />
                      Join our email list to be notified when new shoes are available to buy!
                   </p>
                   <Link to={EMAIL_LIST_PAGE}>
@@ -73,9 +79,9 @@ const BlogScreen = () => {
                <div className={styles.articleText}>
                   <p>
                      The "Pistachio" colorway of the Union LA <a href="https://store.unionlosangeles.com/pages/passport-pack">Passport Pack</a> will be Union exclusives.
-                     
-                     <br/>
-                     <br/>
+
+                     <br />
+                     <br />
                      The remaining two colorways of the Passport Pack is scheduled to release in March and it is not confirmed if they'll be released online or in-store only.
                   </p>
 
@@ -93,7 +99,7 @@ const BlogScreen = () => {
                </div>
             </div>
          </div>
-         <div style={{marginTop: 25, marginBottom: 25 }}>
+         <div style={{ marginTop: 25, marginBottom: 25 }}>
             <Footer />
          </div>
       </div>
