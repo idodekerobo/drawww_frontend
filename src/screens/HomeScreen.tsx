@@ -42,6 +42,7 @@ const HomeScreen = () => {
    }</>
 
    useEffect(() => {
+      document.title = "drawww - buying and selling sneaker raffles"
       getDrawDataFunc();
    }, [ ])
 
