@@ -1,5 +1,5 @@
 import { firebaseAuth, googleAuthProvider, firestoreDb, firebaseStorage } from './firebase';
-import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IStripeUserData, IDrawTicket } from './types'
+import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IDrawTicket } from './types'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
    signInWithPopup, updateProfile, User,
 } from 'firebase/auth';
@@ -11,8 +11,8 @@ import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 // MAKE SURE YOU DON'T PUT A / AFTER THE API URL
 // export const BACKEND_URL = 'http://localhost:5000';
 export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
-export const STRIPE_PUBLISHABLE_TEST_KEY = 'pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks';
-export const STRIPE_PUBLISHABLE_LIVE_KEY = 'pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc';
+// export const STRIPE_PUBLISHABLE_TEST_KEY = 'pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks';
+// export const STRIPE_PUBLISHABLE_LIVE_KEY = 'pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc';
 
 export const signUpWithFirebase = async (email: string, password: string): Promise<User | null> => {
    try {
@@ -163,17 +163,6 @@ export const updateUserDataOnFirestore = async (uid: string, userDataObject: IUs
    }
 }
 
-export const updateUserWhenOnboardedToStripe = async (userUid: string, stripeUserData: IStripeUserData ) => {
-   try {
-      await setDoc(doc(firestoreDb, userCollectionName, userUid), {
-         sellerOnboardedToStripe: true,
-         stripeAccountData: stripeUserData
-      })
-   } catch (err) {
-      console.log('error updating user\'s stripe data');
-      console.log(err)
-   }
-}
 const createTicketsToAddDraw = (raffleId: string, numTickets: number): IDrawTicket[] => {
    // get raffle doc reference
    let arrayOfTickets: IDrawTicket[] = [ ];
@@ -357,21 +346,6 @@ export const addUserToSellerWaitlist = async (userUid: string): Promise<boolean>
             console.log(err);
             return false;
          }
-      }
-   } catch (err) {
-      console.log('err getting user from firestore');
-      console.log(err);
-      return false;
-   }
-   return false;
-}
-
-export const checkIfUserIsEligibleToOnboardToStripe = async (userUid: string): Promise<boolean> => {
-   try {
-      const docSnapshot = await getDoc(doc(firestoreDb, userCollectionName, userUid))
-      if (docSnapshot.exists()) {
-         const userData = docSnapshot.data() as IUserData;
-         if (userData.eligibleToOnboardToStripe) return true
       }
    } catch (err) {
       console.log('err getting user from firestore');

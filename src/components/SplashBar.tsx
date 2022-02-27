@@ -4,12 +4,13 @@ import Typography from '@mui/material/Typography';
 import styles from '../styles/SplashBar.module.css'
 
 interface SplashBarProps {
-   splashBarText: string
+   splashBarText: string,
+   thankYou?: boolean
 }
-const SplashBar = ({ splashBarText }: SplashBarProps) => {
+const SplashBar = ({ splashBarText, thankYou }: SplashBarProps) => {
    return (
       <>
-         <Box className={styles.boxStyling}>
+         <Box className={(!thankYou) ? styles.boxStyling : styles.thankYouBoxStyling }>
             <Typography variant="h6" component="div" >
                {splashBarText}
             </Typography>

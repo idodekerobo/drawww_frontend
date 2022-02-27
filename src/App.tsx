@@ -16,18 +16,12 @@ import SellerOnboarding from './screens/SellerOnboardingScreen';
 import FaqScreen from './screens/FaqScreen';
 import ErrorScreen from './screens/ErrorScreen';
 import BlogScreen from './screens/BlogScreen';
+import ThankYouScreen from './screens/ThankYouScreen';
 
 // react router
 import { Switch, Route, useLocation, Redirect } from "react-router-dom";
-// stripe
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE, BLOG } from './constants'
-import { STRIPE_PUBLISHABLE_TEST_KEY, STRIPE_PUBLISHABLE_LIVE_KEY } from './utils/api';
-
-// const stripePromise = loadStripe(STRIPE_PUBLISHABLE_TEST_KEY);
-const stripePromise = loadStripe(STRIPE_PUBLISHABLE_LIVE_KEY);
+import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE, BLOG, THANK_YOU } from './constants'
 
 const theme = createTheme({
    palette: {
@@ -54,9 +48,11 @@ function App() {
             </PrivateRouteWrapper>
 
             <Route path={`${DRAW}/:drawId`}>
-               <Elements stripe={stripePromise}>
-                  <DrawDetailsScreen />
-               </Elements>
+               <DrawDetailsScreen />
+            </Route>
+
+            <Route path={THANK_YOU}>
+               <ThankYouScreen />
             </Route>
 
             <Route path={LOGIN}>

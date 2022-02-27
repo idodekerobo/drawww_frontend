@@ -1,79 +1,117 @@
-// stripe
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-
-// styles
-import styles from '../styles/DrawDetailsScreen.module.css'
+import { PayPalButtons } from '@paypal/react-paypal-js';
+import { OnApproveData, OnApproveActions, OrderResponseBody, CreateOrderActions, /* CreateOrderRequestBody, */ } from '@paypal/paypal-js';
+import { BACKEND_URL } from '../utils/api';
+import { useHistory } from "react-router-dom";
+import { HOME } from '../constants';
 
 // material ui
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import CircularProgress from '@mui/material/CircularProgress';
 
 interface DialogProps {
-   nameOnCard: string,
-   setNameOnCard: (name: string) => void,
-   emailAddress: string,
-   setEmailAddress: (email: string) => void,
    openDialog: boolean,
    handleDialogClose: () => void,
    amountOfTickets: number,
    pricePerTicket: number,
-   confirmPayButtonClick: () => void,
-   confirmPaymentButtonDisabled: boolean,
-   showProgressSpinner: boolean,
+   drawId: string,
+   buyerUserId: string,
+   drawSellerUserId: string,
 }
-const CheckoutForm = ({nameOnCard, setNameOnCard, emailAddress, setEmailAddress, openDialog, handleDialogClose, amountOfTickets, pricePerTicket, confirmPayButtonClick, confirmPaymentButtonDisabled, showProgressSpinner}: DialogProps) => {
+const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePerTicket, drawId, buyerUserId, drawSellerUserId}: DialogProps) => {
+   const history = useHistory();
+   const totalPrice: number = amountOfTickets*pricePerTicket
+   
+   const validTxnCheck = async () => {
+      const validTxn = await fetch(`${BACKEND_URL}/paypal_checkout/request/${drawId}`, {
+         method: 'POST',
+         headers: {
+            'Content-type': 'application/json',
+         },
+         body: JSON.stringify({
+            amountOfTicketsPurchased: amountOfTickets
+         })
+      })
+      // TODO - check for error response and give user feedback here
+      const validTxnJsonData = await validTxn.json();
+      return validTxnJsonData;
+   }
+
+   const createPaypalOrder = async (data: any, actions: CreateOrderActions) => {
+      const txnData = await validTxnCheck();
+      if (txnData.valid) {
+         return actions.order.create({
+            purchase_units: [
+               { amount: { value: (txnData.totalDollarAmount).toString() } },
+            ]
+         })
+         .then(orderId => {
+            return orderId;
+         })
+         .catch(err => {
+            console.log('error caught. see below.')
+            console.log(err);
+            history.push(HOME);
+            return 'error caught. see below.';
+         });
+      } else {
+         alert('This purchase isn\'t valid!');
+         history.push(HOME);
+         return 'Purchase isn\'t valid.';
+      }
+   }
+   const onOrderApproval = (data: OnApproveData, actions: OnApproveActions) => {
+      if (actions !== undefined && actions.order !== undefined) {
+         return actions.order.capture().then( (details: OrderResponseBody) => {
+            const name = details.payer.name.given_name;
+            const userOrderData = {
+               buyerUserId,
+               buyerEmailAddress: details.payer.email_address,
+               buyerPayerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
+               paypalOrderId: details.id,
+               paypalOrderData: details,
+               drawId,
+               ticketsSold: amountOfTickets,
+               sellerUserId: drawSellerUserId,
+            }
+
+            fetch(`${BACKEND_URL}/paypal_checkout/success`, {
+               method: 'POST',
+               headers: {
+                  'Content-type': 'application/json',
+               },
+               body: JSON.stringify({
+                  userOrderData,
+               })
+            })
+
+            handleDialogClose();
+            alert(`${name}, your purchase was successful!`);
+            history.push(HOME);
+         }).catch(err => {
+            handleDialogClose();
+            alert('There was an error approving the order! Please email idode@drawww.xyz')
+            history.push(HOME);
+            console.log('err w/ approving payments')
+            console.log(err);
+         })
+      } else {
+         return new Promise<void>((resolve) => {
+            resolve()
+         })
+      }
+   }
+
    return (
       <div>
          <Dialog open={openDialog} onClose={handleDialogClose} fullWidth={true} maxWidth={'sm'}>
-            <DialogTitle sx={{ marginTop: 1 }}>Buy {amountOfTickets} Ticket(s)</DialogTitle>
+            <DialogTitle sx={{ marginTop: 1 }}>{amountOfTickets} Ticket(s), Total: ${totalPrice}</DialogTitle>
             <DialogContent>
-               <p className={styles.totalPriceText}>
-                  Total: ${amountOfTickets * pricePerTicket}
-               </p>
-
-               { (showProgressSpinner) ? 
-               <p style={{textAlign: 'center'}}><CircularProgress sx={{margin: 0}}/></p>
-               :
-                  <>
-                     <TextField
-                        sx={{ marginBottom: 2 }}
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="email"
-                        label="Email Address"
-                        placeholder="Email where you'll get your receipt"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                        value={emailAddress}
-                        onChange={(e) => setEmailAddress(e.target.value)}
-                     />
-                     <TextField
-                        sx={{ marginTop: 0, marginBottom: 2 }}
-                        required
-                        margin="dense"
-                        id="name"
-                        label="Name on Card"
-                        placeholder="Name on card used"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                        value={nameOnCard}
-                        onChange={(e) => setNameOnCard(e.target.value)}
-                     />
-                  </>
-               }               
-               <CardElement className={styles.cardElement} />
+               <PayPalButtons 
+                  createOrder={createPaypalOrder}
+                  onApprove={onOrderApproval}
+               />
             </DialogContent>
-            <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
-               <Button disabled={confirmPaymentButtonDisabled} sx={{ width: '80%', fontSize: 18, backgroundColor: 'black', color: 'white', marginBottom: 3 }} type="submit" onClick={confirmPayButtonClick}>Confirm Payment</Button>
-            </DialogActions>
          </Dialog>
       </div>
    );

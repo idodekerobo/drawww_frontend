@@ -1,0 +1,25 @@
+.containerWrapper {
+   margin: 0 auto;
+   text-align: center;
+}
+.thankYouText {
+   font-size: 32px;
+   font-weight: 400;
+}
+.infoText {
+   font-size: 18px;
+   font-weight: 400;
+}
+.link {
+   font-weight: 700;
+   text-decoration: none;
+   color: rgb(206, 4, 4);
+}
+.link:hover {
+   color: black;
+   text-decoration: underline;
+}
+.link:active {
+   color: olive;
+   text-decoration: underline;
+}

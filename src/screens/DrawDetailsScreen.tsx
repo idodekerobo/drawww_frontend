@@ -2,9 +2,6 @@ import { useEffect, useState, useContext } from "react";
 import { Timestamp, DocumentData, onSnapshot, doc } from "firebase/firestore";
 import { firestoreDb } from '../utils/firebase';
 
-// stripe
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-
 // custom components
 import NavigationBar from "../components/NavigationBar";
 import CheckoutForm from "../components/CheckoutForm";
@@ -16,10 +13,10 @@ import { useParams, useHistory } from "react-router-dom";
 import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
-import { BACKEND_URL, raffleCollectionName, getRaffleImagesFromStorage } from '../utils/api';
-import { IDrawUrlParams, IDrawDataFromFirestoreType, IUserTransactionObject } from '../utils/types';
+import { raffleCollectionName, getRaffleImagesFromStorage } from '../utils/api';
+import { IDrawUrlParams, IDrawDataFromFirestoreType } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { HOME, LOGIN } from '../constants';
+import { LOGIN } from '../constants';
 
 // material ui
 import Typography from '@mui/material/Typography';
@@ -29,13 +26,6 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import CircularProgress from '@mui/material/CircularProgress';
-
 
 const initDrawState = {
    userUid: '',
@@ -59,24 +49,23 @@ const DrawDetailsScreen = () => {
    const params: IDrawUrlParams = useParams();
    const { user } = useContext(AuthContext);
    const history = useHistory();
-   const stripe = useStripe();
-   const stripeElements = useElements();
    const [drawData, setDrawData] = useState<IDrawDataFromFirestoreType | DocumentData>(initDrawState)
    const [ drawImageUrls, setDrawImageUrls ] = useState(initDrawUrlArr);
    const [amountOfTickets, setAmountOfTickets] = useState(1);
    const [ chances, setChances ] = useState(0);
 
-   const [ nameOnCard, setNameOnCard ] = useState('');
-   const [ emailAddress, setEmailAddress ] = useState('');
    const [enterDrawButtonDisabled, setEnterDrawButtonDisabled] = useState(false);
    const [ openDialog, setDialog ] = useState(false);
-   const [ showProgressSpinner, setShowProgressSpinner ] = useState(false);
-   const [ confirmPaymentButtonDisabled, setConfirmPaymentButtonDisabled ] = useState(false);
 
 
    const handleClickDialogOpen = () => {
       if (!user) {
+         alert('Please log in or make an account before entering draw!')
          history.push(LOGIN);
+         return;
+      }
+      if (amountOfTickets <= 0) {
+         alert('Tickets need to be more than 0!')
          return;
       }
       setDialog(true);
@@ -85,10 +74,7 @@ const DrawDetailsScreen = () => {
 
    const handleDialogClose = () => {
       setDialog(false);
-      setNameOnCard('');
       setEnterDrawButtonDisabled(false);
-      setConfirmPaymentButtonDisabled(false);
-      setShowProgressSpinner(false);
    };
 
    const onInputChange = (value: string) => {
@@ -104,104 +90,6 @@ const DrawDetailsScreen = () => {
       if (amountOfTickets <= 1) return;
       const newValue = amountOfTickets - 1;
       setAmountOfTickets(newValue);
-   }
-
-   const confirmPayButtonClick = async () => {
-      setConfirmPaymentButtonDisabled(true);
-      setShowProgressSpinner(true);
-      if (!user) {
-         alert('Please log in or make an account before entering draw!')
-         handleDialogClose();
-         return;
-      }
-      if (amountOfTickets <= 0 || !stripe) {
-         alert('Tickets need to be more than 0 to buy')
-         handleDialogClose();
-         setAmountOfTickets(1);
-         return;
-      };
-      // TODO - stop transaction if the time is expired
-      const drawId = params.drawId;
-      const CHECKOUT_URL = `${BACKEND_URL}/checkout/${drawId}`
-
-      if (!stripe || !stripeElements) return;
-      const response = await fetch(CHECKOUT_URL, {
-         method: 'POST',
-         headers: {
-            'Content-type': 'application/json'
-         },
-         body: JSON.stringify({
-            amountOfTicketsPurchased: amountOfTickets,
-            receipt_email: emailAddress,
-         })
-      })
-      // console.log(response);
-      if (response.status >= 400) {
-         alert('There was an error making the payment, please try again later!');
-         alert(response.statusText);
-         handleDialogClose();
-         return;
-      }
-      const paymentIntentResponse = await response.json();
-
-      const card = stripeElements.getElement(CardElement);
-      if (card) {
-         const paymentResult = await stripe.confirmCardPayment(paymentIntentResponse.client_secret, {
-            payment_method: {
-               card,
-               billing_details: { name: nameOnCard },
-            },
-            receipt_email: emailAddress
-         })
-
-         if (paymentResult.error) {
-            alert(`There was an error, please try again later. ${paymentResult.error.message}`);
-            handleDialogClose()
-            // console.log('error with the payment')
-            // console.log(paymentResult.error.message)
-         } else {
-            if (paymentResult.paymentIntent.status === 'succeeded') {
-               
-               const orderData: IUserTransactionObject = {
-                  nameOnCard,
-                  emailAddress,
-                  stripePaymentIntentId: paymentIntentResponse.id,
-                  sellerStripeAcctId: paymentIntentResponse.sellerStripeAcctId,
-                  ticketsSold: paymentIntentResponse.newTicketsSold,
-                  sellerUserId: paymentIntentResponse.sellerUserId,
-                  drawId,
-                  buyerUserId: user.uid,
-                  // add data for dollar amounts
-                  subtotalDollarAmount: paymentIntentResponse.subtotalDollarAmount,
-                  taxDollarAmount: paymentIntentResponse.taxDollarAmount,
-                  totalDollarAmount: paymentIntentResponse.totalDollarAmount,
-               }
-               const POST_TXN_LOGIC_URL = `${BACKEND_URL}/checkout/${drawId}/success`;
-               const postTxnLogicResp = fetch(POST_TXN_LOGIC_URL, {
-                  method: 'POST',
-                  headers: {
-                     'Content-type': 'application/json'
-                  },
-                  body: JSON.stringify({ 
-                     orderData,
-                     ticketsRemaining: paymentIntentResponse.ticketsRemaining,
-                     ticketsSoldAlready: paymentIntentResponse.ticketsSoldAlready
-                  })
-               })
-               if (response.status >= 400) {
-                  // TODO - run some retry logic here
-               }
-               alert('Thank you! Payment successfully went through!');
-               setConfirmPaymentButtonDisabled(false);
-               setShowProgressSpinner(false);
-               history.push(HOME);
-            }
-         }
-      } else {
-         alert('There was an issue on our end. Please try again later!');   
-         handleDialogClose();
-      }
-      handleDialogClose();
    }
 
    useEffect(() => {
@@ -284,17 +172,13 @@ const DrawDetailsScreen = () => {
             </div>
                
             <CheckoutForm 
-               nameOnCard={nameOnCard}
-               setNameOnCard={setNameOnCard}
-               emailAddress={emailAddress}
-               setEmailAddress={setEmailAddress}
                openDialog={openDialog}
                handleDialogClose={handleDialogClose}
+               drawId={params.drawId}
                amountOfTickets={amountOfTickets} 
                pricePerTicket={drawData.pricePerRaffleTicket}
-               confirmPaymentButtonDisabled={confirmPaymentButtonDisabled}
-               showProgressSpinner={showProgressSpinner}
-               confirmPayButtonClick={confirmPayButtonClick}
+               buyerUserId={(user) ? user.uid : ''}
+               drawSellerUserId={drawData.userUid}
             />
          </div>
          <div className={styles.disclaimerContainer}>
