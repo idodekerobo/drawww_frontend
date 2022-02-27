@@ -19,7 +19,7 @@ import { NavLink } from "react-router-dom";
 
 import logo from '../img/drawww.png';
 import { HOME, LOGIN, ACCOUNT, FAQ, BLOG } from '../constants';
-import { START_SELLING, ADD_DRAW } from '../constants';
+// import { START_SELLING, ADD_DRAW } from '../constants';
 
 const NavigationBar = () => {
    const { user, loggedIn } = useContext(AuthContext);
@@ -36,9 +36,9 @@ const NavigationBar = () => {
                      </NavLink>
                   </Typography>
 
-                  <Button color="inherit">
+                  {/* <Button color="inherit">
                      <NavLink className={styles.navLink} to={ADD_DRAW}>Add Draw</NavLink>
-                  </Button>
+                  </Button> */}
                   
                   <Button color="inherit">
                      <NavLink className={styles.navLink} to={BLOG}>Blog</NavLink>
