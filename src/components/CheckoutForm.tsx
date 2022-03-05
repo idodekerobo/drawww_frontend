@@ -55,7 +55,7 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
             return 'error caught. see below.';
          });
       } else {
-         alert('This purchase isn\'t valid!');
+         alert('This purchase isn\'t valid! If the site isn\'t working like it is supposed to, email idode@drawww.xyz or reach out to the Drawww social media.');
          history.push(HOME);
          return 'Purchase isn\'t valid.';
       }
