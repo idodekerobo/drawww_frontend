@@ -1,6 +1,6 @@
 // react
 import React, { useState, useContext } from 'react';
-// router
+import { Helmet } from "react-helmet-async";
 import { Redirect, useHistory } from "react-router-dom";
 
 // api's/utils
@@ -53,6 +53,11 @@ export const EmailSignUpPage = () => {
 
    return (
       <div className={styles.container}>
+         <Helmet>
+            <title> drawww | buying and selling sneaker raffles</title>
+            <meta name="description" content="Raffle and draw tickets for Jordan's, Dunks, New Balances, Yeezy's and more" />
+            <link rel="canonical" href={window.location.href} />
+         </Helmet>
          <div onClick={() => onSkipClick()} className={styles.skipButtonContainer}>
             X
          </div>

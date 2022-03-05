@@ -1,5 +1,6 @@
 // react
 import { useState, useEffect } from 'react';
+import { Helmet } from "react-helmet-async";
 
 // components
 import NavigationBar from '../components/NavigationBar';
@@ -42,12 +43,16 @@ const HomeScreen = () => {
    }</>
 
    useEffect(() => {
-      document.title = "drawww - buying and selling sneaker raffles"
       getDrawDataFunc();
    }, [ ])
 
    return (
       <div className={styles.allComponentWrapper}>
+         <Helmet>
+            <title> drawww | buying and selling sneaker raffles</title>
+            <meta name="description" content="Raffle and draw tickets for Jordan's, Dunks, New Balances, Yeezy's and more" />
+            <link rel="canonical" href={window.location.href} />
+         </Helmet>
          <NavigationBar />
          <SplashBar splashBarText='Available Draws'/>
          <Container className={styles.containerWrapper} maxWidth="xl">

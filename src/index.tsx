@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthContextProvider } from './context/AuthContext/AuthContext';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
@@ -17,14 +18,16 @@ const paypalOptions = {
 
 ReactDOM.render(
   <React.StrictMode>
-     <AuthContextProvider>
-        <PayPalScriptProvider options={paypalOptions}>
-            <Router>
-                  <App/>
-            </Router>
-         </PayPalScriptProvider>
-      </AuthContextProvider>
-  </React.StrictMode>,
+      <HelmetProvider>
+         <AuthContextProvider>
+            <PayPalScriptProvider options={paypalOptions}>
+               <Router>
+                  <App />
+               </Router>
+            </PayPalScriptProvider>
+         </AuthContextProvider>
+      </HelmetProvider>
+   </React.StrictMode>,
   document.getElementById('root')
 );
 

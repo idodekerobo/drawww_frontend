@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from "react";
+import { Helmet } from "react-helmet-async";
 import { Timestamp, DocumentData, onSnapshot, doc } from "firebase/firestore";
 import { firestoreDb } from '../utils/firebase';
 
@@ -110,6 +111,11 @@ const DrawDetailsScreen = () => {
 
    return (
       <>
+         <Helmet>
+            <title> {drawData.raffleSneakerBrand} {drawData.raffleSneakerName} Raffle and Draw Tickets | Drawww</title>
+            <meta name="description" content="Raffle and draw tickets for Jordan's, Dunks, New Balances, Yeezy's and more" />
+            <link rel="canonical" href={window.location.href} />
+         </Helmet>
          <NavigationBar />
          
          <div className={styles.contentContainer}>
