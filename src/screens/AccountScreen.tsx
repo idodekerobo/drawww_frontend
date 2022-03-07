@@ -1,11 +1,10 @@
 // react/npm
 import { useState, useContext, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 // api/utils
-import { IAccountUrlParams } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
-import { BACKEND_URL, signOutWithFirebase } from '../utils/api';
+import { signOutWithFirebase } from '../utils/api';
 import { HOME } from "../constants";
 
 // custom components
@@ -21,7 +20,7 @@ import styles from '../styles/AccountScreen.module.css';
 import Button from '@mui/material/Button';
 
 const AccountScreen = () => {
-   let params: IAccountUrlParams = useParams();
+   // let params: IAccountUrlParams = useParams();
    const { user, logOutFunction } = useContext(AuthContext);
    const history = useHistory();
    const [ editModeActive, setEditMode ] = useState<boolean>(false);

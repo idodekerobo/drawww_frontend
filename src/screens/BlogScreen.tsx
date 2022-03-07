@@ -1,5 +1,4 @@
 // react
-import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 
@@ -21,10 +20,6 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 
 const BlogScreen = () => {
-
-   useEffect(() => {
-      document.title = "How To Cop Union LA Nike Low Dunks | Drawww"
-   })
 
    return (
       <div className={styles.allComponentWrapper}>

@@ -17,6 +17,7 @@ import FaqScreen from './screens/FaqScreen';
 import ErrorScreen from './screens/ErrorScreen';
 import BlogScreen from './screens/BlogScreen';
 import ThankYouScreen from './screens/ThankYouScreen';
+import EmailListWrapperComponent from './components/EmailListDialog';
 
 // react router
 import { Switch, Route, useLocation, Redirect } from "react-router-dom";
@@ -48,6 +49,7 @@ function App() {
             </PrivateRouteWrapper>
 
             <Route path={`${DRAW}/:drawId`}>
+               <EmailListWrapperComponent />
                <DrawDetailsScreen />
             </Route>
 
@@ -76,10 +78,12 @@ function App() {
             </PrivateRouteWrapper>
 
             <Route path={FAQ}>
+               <EmailListWrapperComponent />
                <FaqScreen />
             </Route>
 
             <Route path={HOME}>
+               <EmailListWrapperComponent />
                <HomeScreen />
             </Route>
 
@@ -92,10 +96,12 @@ function App() {
             </Route>
 
             <Route path={BLOG}>
+               <EmailListWrapperComponent />
                <BlogScreen />
             </Route>
             
             <Route path={'/404'}>
+               <EmailListWrapperComponent />
                <ErrorScreen />
             </Route>
 

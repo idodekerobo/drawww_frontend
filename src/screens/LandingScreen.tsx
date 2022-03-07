@@ -1,5 +1,5 @@
 // react
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Helmet } from "react-helmet-async";
 import { Redirect, useHistory } from "react-router-dom";
 
@@ -50,6 +50,10 @@ export const EmailSignUpPage = () => {
          }),
       });
    }
+
+   useEffect(() => {
+      localStorage.setItem('firstVisit', 'false')
+   }, [ ])
 
    return (
       <div className={styles.container}>
