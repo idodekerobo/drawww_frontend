@@ -1,5 +1,6 @@
 // npm/react
 import { useState } from 'react';
+import { Helmet } from "react-helmet-async";
 // import { useHistory } from "react-router-dom";
 
 // react router
@@ -28,7 +29,7 @@ const FaqScreen = () => {
 
    const question1 = <>{(q1Visible) ? 
       <ul>
-         <li>Drawww is a platform where users can buy into and host their own paid Draws for sneakers. You can buy tickets to win Draws for sneakers that others post or list your own Draw to sell your sneakers.</li>
+         <li>Drawww is a platform where users can buy and sell their shoes (and more) via raffle tickets/Draws. You can buy tickets to win sneakers that others post or list your own Draw to sell your sneakers.</li>
          <li>Each sneaker on Drawww is manually verified authentic before being listed on the platform and sent out to the winner of the Draw.</li>
       </ul>
    :
@@ -82,6 +83,11 @@ const FaqScreen = () => {
 
    return (
       <div>
+         <Helmet>
+            <title>Frequently Asked Questions | WTF is Drawww?</title>
+            <meta name="description" content="Raffle and draw tickets for Jordan's, Dunks, New Balances, Yeezy's and more" />
+            <link rel="canonical" href={window.location.href} />
+         </Helmet>
          <NavigationBar />
          <SplashBar splashBarText="FAQ's" />
          <div className={styles.faqContainer}>
