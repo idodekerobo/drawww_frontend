@@ -5,27 +5,20 @@ import App from './App';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthContextProvider } from './context/AuthContext/AuthContext';
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
+import { PaymentContextProvider } from './context/PaymentsContext/PaymentContext';
 import reportWebVitals from './reportWebVitals';
 
-const paypalOptions = {
-   'client-id': (process.env.REACT_APP_PAYPAL_LIVE_CLIENT_ID ? process.env.REACT_APP_PAYPAL_LIVE_CLIENT_ID : 'placeholder'), // live drawww merchant app
-   // 'client-id': (process.env.REACT_APP_PAYPAL_TEST_CLIENT_ID ? process.env.REACT_APP_PAYPAL_TEST_CLIENT_ID : 'placeholder'), // test drawww merchant app
-   currency: 'USD',
-   intent: 'capture',
-   // 'data-clint-token': 'abc123xyz==',
-}
 
 ReactDOM.render(
   <React.StrictMode>
       <HelmetProvider>
+         <PaymentContextProvider>
          <AuthContextProvider>
-            <PayPalScriptProvider options={paypalOptions}>
-               <Router>
-                  <App />
-               </Router>
-            </PayPalScriptProvider>
+            <Router>
+               <App />
+            </Router>
          </AuthContextProvider>
+         </PaymentContextProvider>
       </HelmetProvider>
    </React.StrictMode>,
   document.getElementById('root')

@@ -1,13 +1,17 @@
-import { PayPalButtons } from '@paypal/react-paypal-js';
-import { OnApproveData, OnApproveActions, OrderResponseBody, CreateOrderActions, /* CreateOrderRequestBody, */ } from '@paypal/paypal-js';
+import React, { useEffect, useState, useContext } from 'react'
+import Braintree, { Client, HostedFields, BraintreeError  } from 'braintree-web'
+import { PaymentContext } from '../context/PaymentsContext/PaymentContext';
 import { BACKEND_URL } from '../utils/api';
 import { useHistory } from "react-router-dom";
 import { HOME } from '../constants';
+import styles from '../styles/CheckoutForm.module.css';
 
 // material ui
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import { red } from '@mui/material/colors';
 
 interface DialogProps {
    openDialog: boolean,
@@ -18,9 +22,15 @@ interface DialogProps {
    buyerUserId: string,
    drawSellerUserId: string,
 }
+
+// TODO - need to make sure that token isn't null before rendering checkout form
+// TODO - need to make sure that form is rendered before initializing braintree
+
 const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePerTicket, drawId, buyerUserId, drawSellerUserId}: DialogProps) => {
    const history = useHistory();
    const totalPrice: number = amountOfTickets*pricePerTicket
+   const paymentContext = useContext(PaymentContext);
+   const { token } = paymentContext;
    
    const validTxnCheck = async () => {
       const validTxn = await fetch(`${BACKEND_URL}/paypal_checkout/request/${drawId}`, {
@@ -37,80 +47,136 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
       return validTxnJsonData;
    }
 
-   const createPaypalOrder = async (data: any, actions: CreateOrderActions) => {
-      const txnData = await validTxnCheck();
-      if (txnData.valid) {
-         return actions.order.create({
-            purchase_units: [
-               { amount: { value: (txnData.totalDollarAmount).toString() } },
-            ]
-         })
-         .then(orderId => {
-            return orderId;
-         })
-         .catch(err => {
-            console.log('error caught. see below.')
-            console.log(err);
-            history.push(HOME);
-            return 'error caught. see below.';
-         });
-      } else {
-         alert('This purchase isn\'t valid! If the site isn\'t working like it is supposed to, email idode@drawww.xyz or reach out to the Drawww social media.');
-         history.push(HOME);
-         return 'Purchase isn\'t valid.';
-      }
-   }
-   const onOrderApproval = (data: OnApproveData, actions: OnApproveActions) => {
-      if (actions !== undefined && actions.order !== undefined) {
-         return actions.order.capture().then( (details: OrderResponseBody) => {
-            const name = details.payer.name.given_name;
-            const userOrderData = {
-               buyerUserId,
-               buyerEmailAddress: details.payer.email_address,
-               buyerPayerName: `${details.payer.name.given_name} ${details.payer.name.surname}`,
-               paypalOrderId: details.id,
-               paypalOrderData: details,
-               drawId,
-               ticketsSold: amountOfTickets,
-               sellerUserId: drawSellerUserId,
+   const initializeBraintree = (braintreeToken: string) => {
+      console.log('running init braintree function');
+      const form = document.querySelector('#braintreeForm');
+      // console.log(braintreeToken);
+      Braintree.client.create({ authorization: token }, (err, braintreeClientInstance) => {
+      // window.braintree.client.create({ authorization: braintreeToken }, (err, braintreeClientInstance) => {
+         if (err) {
+            if (err.code === "CLIENT_AUTHORIZATION_INVALID") {
+               // token was expired or need a new one
+               console.log('braintree auth invalid')
             }
-
-            fetch(`${BACKEND_URL}/paypal_checkout/success`, {
-               method: 'POST',
-               headers: {
-                  'Content-type': 'application/json',
-               },
-               body: JSON.stringify({
-                  userOrderData,
-               })
-            })
-
-            handleDialogClose();
-            alert(`${name}, your purchase was successful!`);
-            history.push(HOME);
-         }).catch(err => {
-            handleDialogClose();
-            alert('There was an error approving the order! Please email idode@drawww.xyz')
-            history.push(HOME);
-            console.log('err w/ approving payments')
+            console.log('error initializing braintree');
             console.log(err);
-         })
-      } else {
-         return new Promise<void>((resolve) => {
-            resolve()
-         })
-      }
+            return;
+         }
+         console.log(form);
+         if (!form) return;
+         createHostedFields(braintreeClientInstance, form)
+      })
    }
+   const createHostedFields = (braintreeClient: Client, form: Element) => {
+   // const createHostedFields = (braintreeClient: any, form: Element) => {
+      console.log('create hosted fields function running');
+      Braintree.hostedFields.create({
+      // window.braintree.hostedFields.create({
+         client: braintreeClient,
+         styles: {
+            'input': {
+               'font-size': '16px',
+               'font-family': 'courier, monospace',
+               'font-weight': 'lighter',
+               'color': '#ccc'
+            },
+            ':focus': {
+               'color': 'black'
+            },
+            '.valid': {
+               'color': '#8bdda8'
+            }
+         },
+         fields: {
+            number: {
+               selector: '#card-number',
+               placeholder: '4111 1111 1111 1111'
+            },
+            cvv: {
+               selector: '#cvv',
+               placeholder: '123'
+            },
+            expirationDate: {
+               selector: '#expiration-date',
+               placeholder: 'MM/YYYY'
+            },
+            postalCode: {
+               selector: '#postal-code',
+               placeholder: '11111'
+            }
+         }
+      }, (err, hostedFieldsInstance) => {
+         if (err) {
+            console.log('error creating hosted fields instance');
+            console.log(err);
+         }
+         console.log(hostedFieldsInstance)
+      })
+   }
+
+   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+   }
+
+   const braintreeForm = (
+      <form onSubmit={onFormSubmit} method="post" id="braintreeForm" >
+      <label className="hosted-fields--label" htmlFor="card-number">Card Number</label>
+      <div id="card-number" className="hosted-field"></div>
+
+      <label className="hosted-fields--label" htmlFor="expiration-date">Expiration Date</label>
+      <div id="expiration-date" className="hosted-field"></div>
+
+      <label className="hosted-fields--label" htmlFor="cvv">CVV</label>
+      <div id="cvv" className="hosted-field"></div>
+
+      <label className="hosted-fields--label" htmlFor="postal-code">Postal Code</label>
+      <div id="postal-code" className="hosted-field"></div>
+
+      <div className="button-container">
+         <input style={{ marginRight: 2 + 'px' }} type="submit" className="btn btn-primary" value="Purchase" id="submit" />
+         &nbsp;<a style={{ marginRight: 2 + 'px' }} className="btn btn-warning">Cancel</a>
+      </div>
+   </form>)
+
+   useEffect(() => {
+      initializeBraintree(token);
+   }, [ braintreeForm, token ])
+   // useEffect(() => {
+   //    initializeBraintree(token);
+   // }, )
+
+
 
    return (
       <div>
-         <Dialog open={openDialog} onClose={handleDialogClose} fullWidth={true} maxWidth={'sm'}>
+         <Dialog keepMounted={true} open={openDialog} onClose={handleDialogClose} fullWidth={true} maxWidth={'sm'}>
             <DialogTitle sx={{ marginTop: 1 }}>{amountOfTickets} Ticket(s), Total: ${totalPrice}</DialogTitle>
-            <DialogContent>
-               <PayPalButtons 
-                  createOrder={createPaypalOrder}
-                  onApprove={onOrderApproval}
-               />
+            <DialogContent sx={{ textAlign: 'center' }}>
+
+               {braintreeForm}
+               {/* <form onSubmit={onFormSubmit} method="post" id="braintreeForm" >
+                  <label className="hosted-fields--label" htmlFor="card-number">Card Number</label>
+                  <div id="card-number" className="hosted-field"></div>
+
+                  <label className="hosted-fields--label" htmlFor="expiration-date">Expiration Date</label>
+                  <div id="expiration-date" className="hosted-field"></div>
+
+                  <label className="hosted-fields--label" htmlFor="cvv">CVV</label>
+                  <div id="cvv" className="hosted-field"></div>
+
+                  <label className="hosted-fields--label" htmlFor="postal-code">Postal Code</label>
+                  <div id="postal-code" className="hosted-field"></div>
+
+                  <div className="button-container">
+                     <input style={{ marginRight: 2 + 'px' }} type="submit" className="btn btn-primary" value="Purchase" id="submit" />
+                     &nbsp;<a style={{ marginRight: 2 + 'px' }} className="btn btn-warning">Cancel</a>
+                  </div>
+               </form> */}
+
+               <p>Clicking this enters you in the draw. When tickets are sold out or the draw closes you will be charged for the total amount.</p>
+               <Button sx={{ width: '90%', height: 45, fontSize: 20 }} onClick={() => console.log('confirm draw entry')} variant="contained">
+                  Confirm Entry of {amountOfTickets} Ticket(s)
+               </Button>
             </DialogContent>
          </Dialog>
       </div>

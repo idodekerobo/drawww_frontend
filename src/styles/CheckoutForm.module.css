@@ -1,0 +1,18 @@
+form,
+label,
+input,
+#card-number,
+#expiration-date,
+#cvv,
+#postal-code {
+   position: static;
+   height: 20px;
+   border: 3px solid red;
+   border-radius: 4px,
+}
+
+#hosted-field {
+   position: static;
+   margin: 0;
+
+}
