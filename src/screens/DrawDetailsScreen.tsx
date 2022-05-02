@@ -6,6 +6,7 @@ import { firestoreDb } from '../utils/firebase';
 // custom components
 import NavigationBar from "../components/NavigationBar";
 import CheckoutForm from "../components/CheckoutForm";
+// import ReturningCustomerCheckoutForm from "../components/ReturningCustomerCheckoutForm";
 import CountdownTimer from '../components/CountdownTimer';
 import Footer from '../components/Footer';
 import { useParams, useHistory } from "react-router-dom";
@@ -14,11 +15,13 @@ import { useParams, useHistory } from "react-router-dom";
 import styles from '../styles/DrawDetailsScreen.module.css'
 
 // utils
-import { raffleCollectionName, getRaffleImagesFromStorage } from '../utils/api';
+import { raffleCollectionName, getRaffleImagesFromStorage, checkIfUserHasDrawTickets, getUserDataObjectFromUid } from '../utils/api';
 import { IDrawUrlParams, IDrawDataFromFirestoreType } from '../utils/types';
 import { AuthContext } from '../context/AuthContext/AuthContext';
 import { LOGIN } from '../constants';
 
+// react spinner
+import ClipLoader from "react-spinners/ClipLoader"; 
 // material ui
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -58,6 +61,9 @@ const DrawDetailsScreen = () => {
    const [enterDrawButtonDisabled, setEnterDrawButtonDisabled] = useState(false);
    const [ openDialog, setDialog ] = useState(false);
 
+   const [ numUserTickets, setNumUserTickets ] = useState<null | number>(null);
+   const [ paymentMethodOnFile, setPaymentMethodOnFile ] = useState(false);
+
 
    const handleClickDialogOpen = () => {
       if (!user) {
@@ -68,6 +74,12 @@ const DrawDetailsScreen = () => {
       if (amountOfTickets <= 0) {
          alert('Tickets need to be more than 0!')
          return;
+      }
+      if (numUserTickets) {
+         if (amountOfTickets <= numUserTickets) {
+            alert(`You already have ${numUserTickets} tickets!If you want more specify the correct amount.`)
+            return;
+         }
       }
       setDialog(true);
       setEnterDrawButtonDisabled(true);
@@ -109,6 +121,33 @@ const DrawDetailsScreen = () => {
       setChances(chances);
    }, [ drawData ])
 
+   useEffect(() => {
+      if (!user) {
+         setNumUserTickets(0);
+         return;
+      };
+      const checkForTickets = async () => {
+         const numTickets = await checkIfUserHasDrawTickets(user.uid, params.drawId);
+         setNumUserTickets(numTickets);
+         if (numTickets > 0) setAmountOfTickets(numTickets)
+      }
+      checkForTickets();
+   }, [user, params.drawId])
+
+   useEffect(() => {
+      if (!user) return;
+      const isPaymentMethodOnFile = async () => {
+         const userData = await getUserDataObjectFromUid(user.uid);
+         if (!userData) return;
+         const paymentData = userData?.paymentData;
+         if (!paymentData) return;
+         const braintree = paymentData['braintree']
+         const token = braintree['paymentToken'];
+         if (token) setPaymentMethodOnFile(true)
+      }
+      isPaymentMethodOnFile();
+   }, [ user ])
+
    return (
       <>
          <Helmet>
@@ -132,24 +171,49 @@ const DrawDetailsScreen = () => {
             </div>
             
             <div className={styles.infoContainer}>
-               <div className={styles.numberOfRaffleTicketContainer}>
-                  <div className={styles.numControlContainer}>
-                     <ControlPointIcon className={styles.icon} onClick={() => addTicketClick()} />
-                     <TextField
-                        sx={{ width: 150, }}
-                        size="small"
-                        required
-                        type="number"
-                        id="outlined-required"
-                        label="Tickets"
-                        value={amountOfTickets}
-                        onChange={(e) => onInputChange(e.target.value)}
-                     />
-                     <RemoveCircleOutlineIcon className={styles.icon} onClick={() => minusTicketClick()} />
-                  </div>
-                  <Button sx={{ width: '90%', height: 45, fontSize: 20 }} className={styles.enterDrawButton} onClick={() => handleClickDialogOpen()} variant="contained" disabled={enterDrawButtonDisabled}>
-                     Enter Draw
-                  </Button>
+               <div className={styles.raffleTicketLogicContainer}>
+
+                  {(numUserTickets == null) ?
+                     <ClipLoader speedMultiplier={0.45} color={"black"} loading={true} size={35} />
+                  : (numUserTickets > 0) ?
+                     <div className={styles.numberOfRaffleTicketContainer}>
+                        <div className={styles.numControlContainer}>
+                           <ControlPointIcon className={styles.icon} onClick={() => addTicketClick()} />
+                           <TextField
+                              sx={{ width: 150, color: 'black', }}
+                              size="small"
+                              type="number"
+                              label="Current Tickets"
+                              value={amountOfTickets}
+                              onChange={(e) => onInputChange(e.target.value)}
+                           />
+                           <RemoveCircleOutlineIcon className={styles.icon} onClick={() => minusTicketClick()} />
+                        </div>
+                        <Button sx={{ width: '90%', height: 45, fontSize: 20 }} variant="contained" onClick={() => handleClickDialogOpen()}  disabled={enterDrawButtonDisabled}>
+                           Update Tickets
+                        </Button>
+                     </div>
+                  :
+                     (<div className={styles.numberOfRaffleTicketContainer}>
+                        <div className={styles.numControlContainer}>
+                           <ControlPointIcon className={styles.icon} onClick={() => addTicketClick()} />
+                           <TextField
+                              sx={{ width: 150, }}
+                              size="small"
+                              required
+                              type="number"
+                              id="outlined-required"
+                              label="Tickets"
+                              value={amountOfTickets}
+                              onChange={(e) => onInputChange(e.target.value)}
+                           />
+                           <RemoveCircleOutlineIcon className={styles.icon} onClick={() => minusTicketClick()} />
+                        </div>
+                        <Button sx={{ width: '90%', height: 45, fontSize: 20 }} className={styles.enterDrawButton} onClick={() => handleClickDialogOpen()} variant="contained" disabled={enterDrawButtonDisabled}>
+                           Enter Draw
+                        </Button>
+                     </div>)
+                  }
                </div>
 
                <div className={styles.raffleDetailsContainer}>
@@ -177,14 +241,16 @@ const DrawDetailsScreen = () => {
                </div>
             </div>
                
-            <CheckoutForm 
+            <CheckoutForm
                openDialog={openDialog}
                handleDialogClose={handleDialogClose}
                drawId={params.drawId}
+               numUserTickets={numUserTickets}
                amountOfTickets={amountOfTickets} 
                pricePerTicket={drawData.pricePerRaffleTicket}
                buyerUserId={(user) ? user.uid : ''}
                drawSellerUserId={drawData.userUid}
+               paymentMethodOnFile={paymentMethodOnFile}
             />
          </div>
          <div className={styles.disclaimerContainer}>

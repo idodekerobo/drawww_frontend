@@ -1,8 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
-import Braintree, { Client, HostedFields,  } from 'braintree-web'
 
 const testUrl = 'http://localhost:5000/braintree_client_token';
-const liveUrl = '';
+// const liveUrl = '';
 const initialState = {
    token: '',
 }
@@ -19,17 +18,9 @@ const PaymentContextProvider = ({ children }: { children: React.ReactNode }) => 
          },
       });
       const tokenObject = await tokenResponse.json();
-      // initBraintree(tokenObject.token)
       // console.log(tokenObject.token);
       setToken(tokenObject.token);
    }
-
-   // const initializeBraintree = (token: string) => {
-   //    Braintree.client.create({ authorization: token })
-   //    .then(client => {
-   //       return
-   //    })
-   // }
 
    useEffect(() => {
       getToken();

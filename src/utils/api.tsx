@@ -9,8 +9,8 @@ import { AuthError } from 'firebase/auth';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
 // MAKE SURE YOU DON'T PUT A / AFTER THE API URL
-// export const BACKEND_URL = 'http://localhost:5000';
-export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
+export const BACKEND_URL = 'http://localhost:5000';
+// export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
 // export const STRIPE_PUBLISHABLE_TEST_KEY = 'pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks';
 // export const STRIPE_PUBLISHABLE_LIVE_KEY = 'pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc';
 
@@ -137,6 +137,8 @@ export const addNewUserToFirestore = async (userUid: string, emailAddress: strin
       await setDoc(doc(firestoreDb, userCollectionName, userUid), {
          uid: userUid,
          emailAddress,
+         paymentDataOnFile: false,
+         enteredDraws: [],
       });
       
    } catch (err) {
@@ -172,6 +174,7 @@ const createTicketsToAddDraw = (raffleId: string, numTickets: number): IDrawTick
          id: `${i}`,
          number: i,
          status: 0,
+         paid: false,
          raffleId,
       }
       arrayOfTickets.push(ticket);
@@ -353,4 +356,19 @@ export const addUserToSellerWaitlist = async (userUid: string): Promise<boolean>
       return false;
    }
    return false;
+}
+
+export const checkIfUserHasDrawTickets = async (userId: string, drawId: string): Promise<number> => {
+   if (!userId || !drawId) return 0;
+   const userData = await getUserDataObjectFromUid(userId);
+   const usersEnteredDraws = userData?.enteredDraws;
+   if (!userData || !usersEnteredDraws) {
+      return 0;
+   } else if (!usersEnteredDraws[drawId]) {
+      return 0;
+   }
+   else {
+      const num = usersEnteredDraws[drawId]
+      return num;
+   }
 }

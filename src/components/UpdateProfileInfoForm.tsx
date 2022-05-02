@@ -39,7 +39,7 @@ const UpdateProfileInfoForm = () => {
       if (user) {
          updateUserProfileData(user, name, photoUrlNullPlaceholder);
          const newUserData = {
-            name, phoneNum, city, state, zipCode, shoeGender, shoeSize
+            name, phoneNum, city, state, zipCode, shoeGender, shoeSize,
          }
          updateUserDataOnFirestore(user.uid, newUserData);
          alert('Profile has been updated!');

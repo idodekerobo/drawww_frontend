@@ -26,6 +26,9 @@
    width: 100%;
    text-align: center;
 }
+.raffleTicketLogicContainer {
+   text-align: center;
+}
 .numberOfRaffleTicketContainer {
    display: flex;
    flex-direction: column;

@@ -19,12 +19,17 @@ export interface IUserData {
    emailAddress?: string,
    shoeGender: SneakerGender,
    shoeSize: string,
+   enteredDraws?: {
+      [key: string]: number
+   },
    buyerTransactions?: DocumentReference[],
    sellerTransactions?: DocumentReference[],
    sellerWaitlist?: boolean,
-   eligibleToOnboardToStripe?: boolean,
-   sellerOnboardedToStripe?: SellerStripeOnboardingStatus,
-   stripeAccountData?: IStripeUserData
+   paymentDataOnFile?: boolean,
+   paymentData?: PaymentData,
+}
+interface PaymentData {
+   braintree: {},
 }
 export enum SellerStripeOnboardingStatus {
    "not_onboarded" = 0,
@@ -74,6 +79,7 @@ export interface IDrawTicket {
    status: ITicketStatus,
    raffleId: string,
    buyerId?: string,
+   paid: boolean,
    transactionId?: string,
 }
 enum ITicketStatus {
