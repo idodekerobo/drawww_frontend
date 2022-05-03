@@ -29,7 +29,7 @@ interface DialogProps {
 // TODO - need to make sure that form is rendered before initializing braintree
 
 const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePerTicket, drawId, numUserTickets, buyerUserId, drawSellerUserId, paymentMethodOnFile }: DialogProps) => {
-   // const history = useHistory();
+   const history = useHistory();
    const totalPrice: number = (numUserTickets) ? (amountOfTickets-numUserTickets)*pricePerTicket : (amountOfTickets*pricePerTicket)
    const paymentContext = useContext(PaymentContext);
    const { token } = paymentContext;
@@ -74,25 +74,18 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
       })
    }
 
-   const enterDrawButton = (e: React.FormEvent<HTMLFormElement>, dropinInstance: Dropin | null) => {
+   const enterDrawButton = async (e: React.FormEvent<HTMLFormElement>, dropinInstance: Dropin | null) => {
       e.preventDefault();
-      // console.log('clicked enter')
-      // console.log(dropinInstance);
-      if (!dropinInstance) return;
-      dropinInstance.requestPaymentMethod(async (err, paymentData) => {
-         console.log('sending payment data to server');
-         if (err) {
-            console.log('error sending payment to server')
-            // TODO - give user feedback for errors
-            console.log(err);
-         }
-         let amountOfNewTickets: number;
-         if (numUserTickets) {
-            amountOfNewTickets = amountOfTickets-numUserTickets;
-         } else {
-            amountOfNewTickets = amountOfTickets;
-         }
-         const testUrl = `http://localhost:5000/enter_draw/${drawId}/new_customer`;
+      
+      let amountOfNewTickets: number;
+      if (numUserTickets) {
+         amountOfNewTickets = amountOfTickets-numUserTickets;
+      } else {
+         amountOfNewTickets = amountOfTickets;
+      }
+
+      if (paymentMethodOnFile) {
+         const testUrl = `http://localhost:5000/enter_draw/${drawId}/existing_customer`;
          const responseUrl = await fetch(testUrl, {
             method: 'POST',
             headers: {
@@ -102,17 +95,82 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
                firstName,
                lastName,
                buyerUserId,
-               paymentData,
                numberTicketsAcquired: amountOfNewTickets
             })
          })
          const response = await responseUrl.json();
          console.log(response);
-      })
+         if (response.success) {
+            alert(`You got ${amountOfNewTickets} tickets! Remember, you'll be charged when the draw closes!`)
+            history.push(HOME);
+         } else {
+            alert('There was an error getting your tickets! Please try again later and contact us if the issue continues.')
+            history.push(HOME);
+         }
+
+      } else {
+         // console.log('clicked enter')
+         // console.log(dropinInstance);
+         if (!dropinInstance) return;
+         dropinInstance.requestPaymentMethod(async (err, paymentData) => {
+            console.log('sending payment data to server');
+            if (err) {
+               console.log('error sending payment to server')
+               // TODO - give user feedback for errors
+               console.log(err);
+            }
+            const testUrl = `http://localhost:5000/enter_draw/${drawId}/new_customer`;
+            const responseUrl = await fetch(testUrl, {
+               method: 'POST',
+               headers: {
+                  'Content-type': 'application/json'
+               },
+               body: JSON.stringify({
+                  firstName,
+                  lastName,
+                  buyerUserId,
+                  paymentData,
+                  numberTicketsAcquired: amountOfNewTickets
+               })
+            })
+            // TODO - is the correct place to tear down?
+            dropinInstance.teardown(err => {
+               if (err) {
+                  console.log('error trying to tear down dropin ui');
+                  console.log(err);
+               } else {
+                  console.log('tore down the braintree drop in ui');
+               }
+            })
+            const response = await responseUrl.json();
+            console.log(response);
+            if (response.success) {
+               alert(`You got ${amountOfNewTickets} tickets! Remember, you'll be charged when the draw closes!`)
+               history.push(HOME);
+            } else {
+               alert('There was an error getting your tickets! Please try again later and contact us if the issue continues.')
+               history.push(HOME);
+            }
+         })
+      }
    }
 
    useEffect(() => {
       initDropin(token);
+      // TODO - should i tear down the drop in ui when component unmounts?
+         // seems to cause error where it is torn down twice
+      // return () => {
+      //    if (!dropinInstance) return;
+      //    if (dropinInstance == (null || undefined)) return
+      //    dropinInstance.teardown(err => {
+      //       if (err) {
+      //          console.log('error trying to tear down dropin ui');
+      //          console.log(err);
+      //       } else {
+      //          console.log('tore down the braintree drop in ui');
+      //       }
+      //    })
+      // }
    }, [ token ])
 
    return (
