@@ -134,14 +134,14 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
                })
             })
             // TODO - is the correct place to tear down?
-            dropinInstance.teardown(err => {
-               if (err) {
-                  console.log('error trying to tear down dropin ui');
-                  console.log(err);
-               } else {
-                  console.log('tore down the braintree drop in ui');
-               }
-            })
+            // dropinInstance.teardown(err => {
+            //    if (err) {
+            //       console.log('error trying to tear down dropin ui');
+            //       console.log(err);
+            //    } else {
+            //       console.log('tore down the braintree drop in ui');
+            //    }
+            // })
             const response = await responseUrl.json();
             console.log(response);
             if (response.success) {
@@ -156,6 +156,8 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
    }
 
    useEffect(() => {
+      const { token } = paymentContext;
+      console.log('client token:', token.substring(0, 12));
       initDropin(token);
       // TODO - should i tear down the drop in ui when component unmounts?
          // seems to cause error where it is torn down twice
@@ -190,28 +192,30 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
             <DialogContent sx={{ textAlign: 'center' }}>
 
             <form className={styles.userInputForm} onSubmit={(e) => enterDrawButton(e, dropinInstance)}>
-               <TextField
-                     sx={{ marginBottom: 1 }}
-                     required
-                     type="text"
-                     label="First Name"
-                     placeholder="First Name"
-                     value={firstName}
-                     onChange={(e) => setFirstName(e.target.value)}
-                  />
-                  <TextField
-                     sx={{ marginBottom: 2 }}
-                     required
-                     type="text"
-                     label="Last Name"
-                     placeholder="Last Name"
-                     value={lastName}
-                     onChange={(e) => setLastName(e.target.value)}
-                  />
                   {(paymentMethodOnFile) ?
                      <></>
                      :
-                     <div id="braintree-dropin-container"></div>
+                     <>
+                        <TextField
+                           sx={{ marginBottom: 1 }}
+                           required
+                           type="text"
+                           label="First Name"
+                           placeholder="First Name"
+                           value={firstName}
+                           onChange={(e) => setFirstName(e.target.value)}
+                        />
+                        <TextField
+                           sx={{ marginBottom: 2 }}
+                           required
+                           type="text"
+                           label="Last Name"
+                           placeholder="Last Name"
+                           value={lastName}
+                           onChange={(e) => setLastName(e.target.value)}
+                        />
+                        <div id="braintree-dropin-container"></div>
+                     </>
                   }
 
                   <Button type="submit" sx={{ width: '90%', height: 65, fontSize: 20, marginRight: 'auto', marginLeft: 'auto' }} variant="contained">

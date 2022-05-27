@@ -47,7 +47,7 @@ const AddDrawScreen = () => {
       
       if (user) { // would have to use user?.uid below w/o the if block
          const userRaffleData = {
-            userUid: user.uid,
+            sellerUserId: user.uid,
             raffleDuration: numRaffleDuration,
             pricePerRaffleTicket: numPricePerRaffleTicket,
             numTotalRaffleTickets,

@@ -50,7 +50,7 @@ export enum SneakerGender {
    "womens" = 1,
 }
 export interface IUserDrawData {
-   userUid: string,
+   sellerUserId: string,
    sneakerGender: SneakerGender,
    raffleSneakerBrand: string,
    raffleSneakerName: string,
@@ -63,7 +63,7 @@ export interface IDrawDataFromFirestoreType extends IUserDrawData {
    id: string,
    active: boolean,
    raffleType: string,
-   tickets: IDrawTicket[],
+   tickets: DocumentReference[],
    numRemainingRaffleTickets: number,
    soldRaffleTickets: number,
    timeRaffleCreated: Timestamp,
@@ -71,22 +71,30 @@ export interface IDrawDataFromFirestoreType extends IUserDrawData {
    raffleImageStoragePath: string,
    raffleImageDownloadUrls: string[],
    transactions: DocumentReference[],
-   buyerTickets: string[],
+   // buyerTickets: string[],
+   buyerTickets: {
+      [buyerUserId: string]: {
+         numTickets: number,
+         paid: boolean,
+         ticketArr: string[],
+      }
+   }
 }
 export interface IDrawTicket {
    id: string,
-   number: number,
+   drawId: string,
+   sellerUserId: string,
+   drawTicketNumber: number, // 0-X depending on num of tickets in raffle
    status: ITicketStatus,
-   raffleId: string,
-   buyerId?: string,
    paid: boolean,
+   buyerUserId?: string,
    transactionId?: string,
 }
 enum ITicketStatus {
    "available" = 0,
-   "sold" = 1,
+   "claimed" = 1,
+   "sold" = 2,
 }
-
 export interface IAccountUrlParams {
    accountId: string,
 }

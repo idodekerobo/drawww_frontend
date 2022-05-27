@@ -3,7 +3,7 @@ import { IUserData, IUserDrawData, IDrawDataFromFirestoreType, IDrawTicket } fro
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
    signInWithPopup, updateProfile, User,
 } from 'firebase/auth';
-import { doc, collection, getDoc, getDocs, setDoc, updateDoc, arrayUnion, Timestamp, DocumentData } from "firebase/firestore";
+import { doc, collection, getDoc, getDocs, setDoc, updateDoc, arrayUnion, Timestamp, DocumentData, DocumentReference } from "firebase/firestore";
 import { AuthError } from 'firebase/auth';
 // import { FirebaseError } from 'firebase/app';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
@@ -130,6 +130,7 @@ const userCollectionName = 'users';
 export const raffleCollectionName = 'draws';
 const txnRaffleCollectionName = 'transactions';
 const sellerWaitlistCollectionName = 'sellerWaitlist';
+const ticketCollectionName = 'tickets';
 
 export const addNewUserToFirestore = async (userUid: string, emailAddress: string | null) => {
    console.log('adding new user to firestore');
@@ -165,22 +166,33 @@ export const updateUserDataOnFirestore = async (uid: string, userDataObject: IUs
    }
 }
 
-const createTicketsToAddDraw = (raffleId: string, numTickets: number): IDrawTicket[] => {
+const createTicketsToAddDraw = (drawId: string, numTickets: number, sellerId: string): DocumentReference[] => {
    // get raffle doc reference
-   let arrayOfTickets: IDrawTicket[] = [ ];
+   let arrayOfTicketRefs: DocumentReference[] = [ ];
 
    for (let i=1; i <= numTickets; i++) {
-      const ticket = {
-         id: `${i}`,
-         number: i,
+      // create ref to new document in ticket collection
+      const newTicketRef = doc(collection(firestoreDb, ticketCollectionName));
+      const newTicketObject = {
+         id: newTicketRef.id,
+         drawId,
+         sellerId,
+         drawTicketNumber: i,
          status: 0,
          paid: false,
-         raffleId,
       }
-      arrayOfTickets.push(ticket);
+      arrayOfTicketRefs.push(newTicketRef);
+      try {
+         //s should i await this???
+         const resp = setDoc(newTicketRef, newTicketObject)
+      } catch (err) {
+         console.log('error creating new ticket instance')
+      }
+
    }
-   return arrayOfTickets;
+   return arrayOfTicketRefs;
 }
+
 export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IUserDrawData, raffleImages: FileList | null): Promise<boolean> => {
    
    const timeRaffleCreated: Timestamp = Timestamp.now()
@@ -193,7 +205,7 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
 
    try {
       const newRaffleRef = doc(collection(firestoreDb, raffleCollectionName));
-      const tickets = createTicketsToAddDraw(newRaffleRef.id, raffleDataObject.numTotalRaffleTickets)
+      const tickets = createTicketsToAddDraw(newRaffleRef.id, raffleDataObject.numTotalRaffleTickets, userUid)
       const data: IDrawDataFromFirestoreType = {
          ...raffleDataObject,
          // add default object values
@@ -206,7 +218,7 @@ export const addRaffleToFirestore = async (userUid: string, raffleDataObject: IU
          timeRaffleCreated,
          raffleExpirationDate: expireDate,
          transactions: [],
-         buyerTickets: [],
+         buyerTickets: {},
          raffleImageStoragePath: `raffles/${newRaffleRef.id}/images`,
          raffleImageDownloadUrls: [],
       }

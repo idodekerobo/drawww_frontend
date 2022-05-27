@@ -249,7 +249,7 @@ const DrawDetailsScreen = () => {
                amountOfTickets={amountOfTickets} 
                pricePerTicket={drawData.pricePerRaffleTicket}
                buyerUserId={(user) ? user.uid : ''}
-               drawSellerUserId={drawData.userUid}
+               drawSellerUserId={drawData.sellerUserId}
                paymentMethodOnFile={paymentMethodOnFile}
             />
          </div>
