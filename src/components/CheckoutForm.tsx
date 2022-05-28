@@ -104,7 +104,9 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
             alert(`You got ${amountOfNewTickets} tickets! Remember, you'll be charged when the draw closes!`)
             history.push(HOME);
          } else {
-            alert('There was an error getting your tickets! Please try again later and contact us if the issue continues.')
+            // console.log(response);
+            alert(response.status);
+            // alert('There was an error getting your tickets! Please try again later and contact us if the issue continues.')
             history.push(HOME);
          }
 
@@ -148,7 +150,8 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
                alert(`You got ${amountOfNewTickets} tickets! Remember, you'll be charged when the draw closes!`)
                history.push(HOME);
             } else {
-               alert('There was an error getting your tickets! Please try again later and contact us if the issue continues.')
+               // console.log(response);
+               alert(response.status);
                history.push(HOME);
             }
          })
@@ -157,7 +160,7 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
 
    useEffect(() => {
       const { token } = paymentContext;
-      console.log('client token:', token.substring(0, 12));
+      // console.log('client token:', token.substring(0, 12));
       initDropin(token);
       // TODO - should i tear down the drop in ui when component unmounts?
          // seems to cause error where it is torn down twice
