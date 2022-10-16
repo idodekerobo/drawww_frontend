@@ -18,6 +18,9 @@ import ErrorScreen from './screens/ErrorScreen';
 import BlogScreen from './screens/BlogScreen';
 import ThankYouScreen from './screens/ThankYouScreen';
 import EmailListWrapperComponent from './components/EmailListDialog';
+import AboutScreen from './screens/AboutScreen';
+import PrivacyPolicy from './screens/PrivacyPolicy';
+import ReturnPolicy from './screens/ReturnPolicy';
 
 // react router
 import { Switch, Route, useLocation, Redirect } from "react-router-dom";
@@ -98,6 +101,17 @@ function App() {
             <Route path={BLOG}>
                <EmailListWrapperComponent />
                <BlogScreen />
+            </Route>
+
+            <Route path={'/about/returns'}>
+               <ReturnPolicy />
+            </Route>
+            
+            <Route path={'/about/privacy'}>
+               <PrivacyPolicy />
+            </Route>
+            <Route path={'/about'}>
+               <AboutScreen />
             </Route>
             
             <Route path={'/404'}>

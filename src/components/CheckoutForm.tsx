@@ -107,10 +107,10 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
          <Dialog open={openDialog} onClose={handleDialogClose} fullWidth={true} maxWidth={'sm'}>
             <DialogTitle sx={{ marginTop: 1 }}>{amountOfTickets} Ticket(s), Total: ${totalPrice}</DialogTitle>
             <DialogContent>
-               <PayPalButtons 
+               {/* <PayPalButtons 
                   createOrder={createPaypalOrder}
                   onApprove={onOrderApproval}
-               />
+               /> */}
             </DialogContent>
          </Dialog>
       </div>

@@ -31,6 +31,7 @@ const FaqScreen = () => {
       <ul>
          <li>Drawww is a platform where users can buy and sell their shoes (and more) via raffle tickets/Draws. You can buy tickets to win sneakers that others post or list your own Draw to sell your sneakers.</li>
          <li>Each sneaker on Drawww is manually verified authentic before being listed on the platform and sent out to the winner of the Draw.</li>
+         <li><a href="/about">Click here</a> to learn more about our company.</li>
       </ul>
    :
       null
