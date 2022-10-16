@@ -9,8 +9,8 @@ import { AuthError } from 'firebase/auth';
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage';
 
 // MAKE SURE YOU DON'T PUT A / AFTER THE API URL
-export const BACKEND_URL = 'http://localhost:5000';
-// export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
+// export const BACKEND_URL = 'http://localhost:5000';
+export const BACKEND_URL = 'https://drawww-backend.herokuapp.com';
 // export const STRIPE_PUBLISHABLE_TEST_KEY = 'pk_test_51H0IWVL4UppL0br2bYSp1tlwvfoPwDEjfjPUx4ilY0zQr8LY0txFJjj9CHqPTP27ieDiTHhxQfNlaKSuPVcNkuq00071qG37ks';
 // export const STRIPE_PUBLISHABLE_LIVE_KEY = 'pk_live_51H0IWVL4UppL0br24eHsSMTrCwqn14x1ZO9Sss27X1lHVrX7dsIHRIOSKAqU9yoi4YwmDYsPq5wMOknK3L3XdV6E00EVOPuHvc';
 
