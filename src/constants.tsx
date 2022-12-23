@@ -11,3 +11,4 @@ export const FAQ = '/faq';
 export const EMAIL_LIST_PAGE = '/email-list';
 export const BLOG = '/blog';
 export const THANK_YOU = '/thankyou';
+export const HELP = '/help';

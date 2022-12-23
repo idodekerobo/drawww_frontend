@@ -76,7 +76,7 @@ const FaqScreen = () => {
    
    const question6 = <>{(q6Visible) ?
       <ul>
-         <li>You can reach out to the drawww <a className={styles.contactLinks} href="https://www.instagram.com/drawww.xyz/">instagram</a> account, <a className={styles.contactLinks} href="https://twitter.com/drawwwxyz">twitter</a> account, or email <a className={styles.contactLinks} href="mailto:idode.kerobo@gmail.com">idode.kerobo@gmail.com</a>.</li>
+         <li>You can reach out to the drawww <a className={styles.contactLinks} href="https://www.instagram.com/drawww.xyz/">instagram</a> account, <a className={styles.contactLinks} href="https://twitter.com/drawwwxyz">twitter</a> account, or email <a className={styles.contactLinks} href="mailto:idode@drawww.xyz">idode@drawww.xyz</a>.</li>
       </ul>
    :
       null

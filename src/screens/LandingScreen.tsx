@@ -1,7 +1,7 @@
 // react
 import React, { useState, useContext, useEffect } from 'react';
 import { Helmet } from "react-helmet-async";
-import { Redirect, useHistory } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 // api's/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
@@ -21,19 +21,19 @@ const LandingScreen = () => {
    const { loggedIn } = useContext(AuthContext);
 
    if (loggedIn) {
-      return <Redirect to={HOME} />
+      return <Navigate to={HOME} />
    }
    return <EmailSignUpPage />
 }
 export default LandingScreen;
 
 export const EmailSignUpPage = () => {
-   const history = useHistory();
+   const navigate = useNavigate();
    const [ userEmail, setEmail ] = useState('');
    const [ signedUp, setSignedUp ] = useState(false);
 
    const onSkipClick = () => {
-      history.push(HOME);
+      navigate(HOME);
    }
 
    const onSignUpClick = async (e: React.FormEvent<HTMLFormElement>) => {

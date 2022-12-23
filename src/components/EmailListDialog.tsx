@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-const EmailListWrapperComponent = () => {
+const EmailListWrapperComponent = ({ children, redirectTo }: any) => {
    const [ dialogOpen, setDialogOpen ] = useState(false);
    const handleDialogClose = () => {
       setDialogOpen(false);
@@ -22,7 +22,6 @@ const EmailListWrapperComponent = () => {
          // console.log(firstVisit);
          return true
       } else {
-         // console.log(firstVisit);
          return false
       }
    }

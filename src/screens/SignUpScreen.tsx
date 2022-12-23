@@ -2,7 +2,7 @@
 import React, { useContext, useState } from 'react';
 
 // npm
-import { useHistory, Redirect, Link } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 
 // custom components
 import NavigationBar from '../components/NavigationBar';
@@ -23,7 +23,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const SignUpScreen = () => {
-   const history = useHistory();
+   // const history = useHistory();
+   const navigate = useNavigate();
    const { loggedIn, signUpFunction } = useContext(AuthContext);
    const { windowWidth } = useWindowDimensions();
    const [ email, setEmail ] = useState<string>('')
@@ -37,7 +38,7 @@ const SignUpScreen = () => {
          setPassword('');
          signUpFunction(user);
       }
-      history.push(WELCOME);
+      navigate(WELCOME);
    }
 
    const onSignUpWithGoogleClick = async () => {
@@ -47,12 +48,12 @@ const SignUpScreen = () => {
          setPassword('');
          signUpFunction(user);
       }
-      history.push(WELCOME);
+      navigate(WELCOME);
    }
 
    if (loggedIn) {
       return (
-         <Redirect to={HOME} />
+         <Navigate to={HOME} /> 
       )
    }
 

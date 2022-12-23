@@ -2,7 +2,7 @@
 import React, { useContext, useState } from 'react';
 
 // react router
-import { useHistory, Redirect, Link } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 
 // utilities
 import { loginWithFirebase, signInWithGoogleAuth, checkIfUserExistsInFirestore, addNewUserToFirestore } from '../utils/api';
@@ -23,7 +23,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 const LoginScreen = () => {
-   const history = useHistory();
+   const navigate = useNavigate();
    const { windowWidth } = useWindowDimensions();
    const { loggedIn, logInFunction } = useContext(AuthContext);
    
@@ -56,7 +56,7 @@ const LoginScreen = () => {
             setPassword('');
             setLoginButtonsDisabled(false);
             logInFunction(user);
-            history.push(WELCOME);
+            navigate(WELCOME);
          } else {
             setEmail('');
             setPassword('');
@@ -70,7 +70,7 @@ const LoginScreen = () => {
 
    if (loggedIn) {
       return (
-         <Redirect to={HOME} />
+         <Navigate to={HOME} /> 
       )
    }
    return (

@@ -1,7 +1,7 @@
 // react/npm
 import React, { useContext, useEffect, useState } from 'react';
 import { onSnapshot, doc } from "firebase/firestore";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
@@ -23,7 +23,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 const UpdateProfileInfoForm = () => {
 
    const { user } = useContext(AuthContext);
-   const history = useHistory();
+   const navigate = useNavigate();
 
    const [name, setName] = useState('');
    const [phoneNum, setPhoneNum] = useState('');
@@ -43,7 +43,7 @@ const UpdateProfileInfoForm = () => {
          }
          updateUserDataOnFirestore(user.uid, newUserData);
          alert('Profile has been updated!');
-         history.push(HOME);
+         navigate(HOME);
       } else {
          alert(`Profile wasn't able to update! Please try again later.`);
       }

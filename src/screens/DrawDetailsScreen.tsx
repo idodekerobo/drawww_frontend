@@ -8,7 +8,7 @@ import NavigationBar from "../components/NavigationBar";
 import CheckoutForm from "../components/CheckoutForm";
 import CountdownTimer from '../components/CountdownTimer';
 import Footer from '../components/Footer';
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // styles
 import styles from '../styles/DrawDetailsScreen.module.css'
@@ -47,9 +47,9 @@ const initDrawState = {
 const initDrawUrlArr: string[] = []
 
 const DrawDetailsScreen = () => {
-   const params: IDrawUrlParams = useParams();
+   const params = useParams();
    const { user } = useContext(AuthContext);
-   const history = useHistory();
+   const navigate = useNavigate();
    const [drawData, setDrawData] = useState<IDrawDataFromFirestoreType | DocumentData>(initDrawState)
    const [ drawImageUrls, setDrawImageUrls ] = useState(initDrawUrlArr);
    const [amountOfTickets, setAmountOfTickets] = useState(1);
@@ -62,7 +62,7 @@ const DrawDetailsScreen = () => {
    const handleClickDialogOpen = () => {
       if (!user) {
          alert('Please log in or make an account before entering draw!')
-         history.push(LOGIN);
+         navigate(LOGIN);
          return;
       }
       if (amountOfTickets <= 0) {
@@ -94,10 +94,10 @@ const DrawDetailsScreen = () => {
    }
 
    useEffect(() => {
-      const unsub = onSnapshot(doc(firestoreDb, raffleCollectionName, params.drawId), async (doc) => {
+      const unsub = onSnapshot(doc(firestoreDb, raffleCollectionName, (params.drawId) ? params.drawId : ''), async (doc) => {
          const newDrawData = doc.data();
          if (newDrawData) setDrawData(newDrawData);
-         const raffleImagesUrlArr = await getRaffleImagesFromStorage(params.drawId);
+         const raffleImagesUrlArr = await getRaffleImagesFromStorage((params.drawId) ? params.drawId : '');
          setDrawImageUrls(raffleImagesUrlArr);
       })
       return () => unsub();
@@ -180,7 +180,7 @@ const DrawDetailsScreen = () => {
             <CheckoutForm 
                openDialog={openDialog}
                handleDialogClose={handleDialogClose}
-               drawId={params.drawId}
+               drawId={(params.drawId) ? params.drawId : ''}
                amountOfTickets={amountOfTickets} 
                pricePerTicket={drawData.pricePerRaffleTicket}
                buyerUserId={(user) ? user.uid : ''}

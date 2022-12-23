@@ -1,7 +1,7 @@
 import { PayPalButtons } from '@paypal/react-paypal-js';
 import { OnApproveData, OnApproveActions, OrderResponseBody, CreateOrderActions, /* CreateOrderRequestBody, */ } from '@paypal/paypal-js';
 import { BACKEND_URL } from '../utils/api';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { HOME } from '../constants';
 
 // material ui
@@ -19,7 +19,7 @@ interface DialogProps {
    drawSellerUserId: string,
 }
 const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePerTicket, drawId, buyerUserId, drawSellerUserId}: DialogProps) => {
-   const history = useHistory();
+   const navigate = useNavigate();
    const totalPrice: number = amountOfTickets*pricePerTicket
    
    const validTxnCheck = async () => {
@@ -51,12 +51,12 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
          .catch(err => {
             console.log('error caught. see below.')
             console.log(err);
-            history.push(HOME);
+            navigate(HOME);
             return 'error caught. see below.';
          });
       } else {
          alert('This purchase isn\'t valid! If the site isn\'t working like it is supposed to, email idode@drawww.xyz or reach out to the Drawww social media.');
-         history.push(HOME);
+         navigate(HOME);
          return 'Purchase isn\'t valid.';
       }
    }
@@ -87,11 +87,11 @@ const CheckoutForm = ({ openDialog, handleDialogClose, amountOfTickets, pricePer
 
             handleDialogClose();
             alert(`${name}, your purchase was successful!`);
-            history.push(HOME);
+            navigate(HOME);
          }).catch(err => {
             handleDialogClose();
             alert('There was an error approving the order! Please email idode@drawww.xyz')
-            history.push(HOME);
+            navigate(HOME);
             console.log('err w/ approving payments')
             console.log(err);
          })

@@ -1,6 +1,6 @@
 // npm/react
 import React, { useState, useContext } from 'react';
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
@@ -22,7 +22,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 const AddDrawScreen = () => {
-   const history = useHistory();
+   const navigate = useNavigate();
    const { user } = useContext(AuthContext);
 
    const [ submitButtonDisabled, setSubmitButtonDisabled ] = useState(false);
@@ -58,7 +58,7 @@ const AddDrawScreen = () => {
          
          if (completed) {
             alert('Thanks for submitting the raffle!')
-            history.push(HOME);
+            navigate(HOME);
          } else {
             alert('Something went wrong! Please try again later!');
             setSubmitButtonDisabled(false);

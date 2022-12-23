@@ -1,6 +1,6 @@
 // react/npm
 import { useState, useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // api/utils
 import { AuthContext } from '../context/AuthContext/AuthContext';
@@ -22,7 +22,7 @@ import Button from '@mui/material/Button';
 const AccountScreen = () => {
    // let params: IAccountUrlParams = useParams();
    const { user, logOutFunction } = useContext(AuthContext);
-   const history = useHistory();
+   const navigate = useNavigate();
    const [ editModeActive, setEditMode ] = useState<boolean>(false);
    const [ editString, setEditString ] = useState<string>('Edit Profile Info');
    const [ loading, setLoading ] = useState<boolean>(false);
@@ -38,7 +38,7 @@ const AccountScreen = () => {
    const onlogOutButtonClick = () => {
       signOutWithFirebase();
       logOutFunction();
-      history.push(HOME);
+      navigate(HOME);
    }
 
    useEffect(() => {

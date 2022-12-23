@@ -10,7 +10,7 @@ import AccountScreen from './screens/AccountScreen';
 import AddDrawScreen from './screens/AddDrawScreen';
 import DrawDetailsScreen from './screens/DrawDetailsScreen'
 import LandingScreen, { EmailSignUpPage } from './screens/LandingScreen';
-import PrivateRouteWrapper from './screens/PrivateRouteWrapper';
+import AuthRequiredRoute from './screens/PrivateRouteWrapper';
 import LoadingScreen from './screens/LoadingScreen';
 import SellerOnboarding from './screens/SellerOnboardingScreen';
 import FaqScreen from './screens/FaqScreen';
@@ -19,13 +19,13 @@ import BlogScreen from './screens/BlogScreen';
 import ThankYouScreen from './screens/ThankYouScreen';
 import EmailListWrapperComponent from './components/EmailListDialog';
 import AboutScreen from './screens/AboutScreen';
-import PrivacyPolicy from './screens/PrivacyPolicy';
-import ReturnPolicy from './screens/ReturnPolicy';
+import { ReturnPolicy, PrivacyPolicy, ChargebackPolicy, CustomerService, ShippingHandling } from './screens/Policies';
+import HelpScreen from './screens/Help';
 
 // react router
-import { Switch, Route, useLocation, Redirect } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE, BLOG, THANK_YOU } from './constants'
+import { HOME, LOGIN, SIGN_UP, WELCOME, ACCOUNT, ADD_DRAW, DRAW, LANDING, START_SELLING, FAQ, EMAIL_LIST_PAGE, BLOG, THANK_YOU, HELP } from './constants'
 
 const theme = createTheme({
    palette: {
@@ -46,81 +46,72 @@ function App() {
    return (
       <ThemeProvider theme={theme}>
          <AudioPlayer path={location.pathname} />
-         <Switch>
-            <PrivateRouteWrapper path={`${ACCOUNT}/:accountId`}>
-               <AccountScreen />
-            </PrivateRouteWrapper>
+         <Routes>
+            <Route path={`${ACCOUNT}/:accountId`}
+               element={
+                  <AuthRequiredRoute redirectTo={LOGIN}>
+                     <AccountScreen />
+                  </AuthRequiredRoute>
+               }
+             /> 
 
-            <Route path={`${DRAW}/:drawId`}>
-               <EmailListWrapperComponent />
-               <DrawDetailsScreen />
+            <Route path={`${DRAW}/:drawId`}
+               element={
+                  <DrawDetailsScreen />
+               }
+            />
+
+            <Route path={THANK_YOU} element={ <ThankYouScreen />} />
+
+            <Route path={LOGIN} element={<LoginScreen />} />
+
+            <Route path={SIGN_UP} element={ <SignUpScreen />} />
+
+            <Route path={WELCOME}
+               element={
+                  <AuthRequiredRoute redirectTo={LOGIN}>
+                     <WelcomeScreen />
+                  </AuthRequiredRoute>
+               }
+            />
+
+            <Route path={ADD_DRAW}
+               element={
+                  <AuthRequiredRoute redirectTo={LOGIN}>
+                     <AddDrawScreen />
+                  </AuthRequiredRoute>
+               }
+            />
+            <Route path={START_SELLING}
+               element={
+                  <AuthRequiredRoute redirectTo={LOGIN}>
+                     <SellerOnboarding />
+                  </AuthRequiredRoute>
+               }
+            />
+
+            <Route path={HELP} element={<HelpScreen />}>
+               <Route path='chargebacks' element={ <ChargebackPolicy /> } />
+               <Route path='returns' element={<ReturnPolicy />} />
+               <Route path='privacy' element={<PrivacyPolicy />} />
+               <Route path='customerservice' element={<CustomerService />} />
+               <Route path='shippinghandling' element={ <ShippingHandling />} /> 
             </Route>
 
-            <Route path={THANK_YOU}>
-               <ThankYouScreen />
-            </Route>
+            <Route path={FAQ} element={<FaqScreen />} />
 
-            <Route path={LOGIN}>
-               <LoginScreen />
-            </Route>
+            <Route path={HOME} element={ <HomeScreen /> } />
 
-            <Route path={SIGN_UP}>
-               <SignUpScreen />
-            </Route>
+            <Route path={LANDING} element={<LandingScreen />} />
 
-            <PrivateRouteWrapper path={WELCOME}>
-               <WelcomeScreen />
-            </PrivateRouteWrapper>
+            <Route path={EMAIL_LIST_PAGE} element={<EmailSignUpPage />} />
 
-            <PrivateRouteWrapper path={ADD_DRAW}>
-               <AddDrawScreen />
-            </PrivateRouteWrapper>
-
-            <PrivateRouteWrapper path={START_SELLING}>
-               <SellerOnboarding />
-            </PrivateRouteWrapper>
-
-            <Route path={FAQ}>
-               <EmailListWrapperComponent />
-               <FaqScreen />
-            </Route>
-
-            <Route path={HOME}>
-               <EmailListWrapperComponent />
-               <HomeScreen />
-            </Route>
-
-            <Route exact path={LANDING}>
-               <LandingScreen />
-            </Route>
-
-            <Route path={EMAIL_LIST_PAGE}>
-               <EmailSignUpPage />
-            </Route>
-
-            <Route path={BLOG}>
-               <EmailListWrapperComponent />
-               <BlogScreen />
-            </Route>
-
-            <Route path={'/about/returns'}>
-               <ReturnPolicy />
-            </Route>
+            <Route path={BLOG} element={ <BlogScreen /> } />
+             
+            <Route path={'/about'} element={ <AboutScreen /> } /> 
             
-            <Route path={'/about/privacy'}>
-               <PrivacyPolicy />
-            </Route>
-            <Route path={'/about'}>
-               <AboutScreen />
-            </Route>
-            
-            <Route path={'/404'}>
-               <EmailListWrapperComponent />
-               <ErrorScreen />
-            </Route>
-
-            <Redirect to="/404" />
-         </Switch>
+            <Route path='*' element={ <ErrorScreen /> } /> 
+         </Routes>
       </ThemeProvider>
    );
 }
