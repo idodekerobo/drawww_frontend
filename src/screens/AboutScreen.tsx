@@ -14,10 +14,10 @@ const AboutScreen = () => {
                Everyone involved in the sneaker and streetwear community knows its gotten harder and harder to get the items that you love over the past few years. You have to invest huge amounts of money and time to <em>maybe</em> win an item or pay a lot of money on the resale market (RIP to your bank account).<br/><h4>Drawww is designed to help make the game a bit easier.</h4>
             </p>
             
-            <h4><a href="/about/privacy">
+            <h4><a href="/help/privacy">
                Privacy Policy
             </a></h4>
-            <h4><a href="/about/returns">
+            <h4><a href="/help/returns">
                Return Policy
             </a></h4>
 
