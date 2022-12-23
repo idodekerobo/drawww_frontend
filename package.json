@@ -2,6 +2,9 @@
   "name": "mini_raffle_app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+      "node": "14.x"
+  },
   "dependencies": {
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
