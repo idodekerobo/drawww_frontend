@@ -1,12 +1,16 @@
 import NavigationBar from "../components/NavigationBar";
+import { Helmet } from "react-helmet-async";
 import Footer from "../components/Footer";
 import { Link, Outlet } from "react-router-dom";
- 
-
 
 const HelpScreen = () => {
    return (
       <>
+         <Helmet>
+            <title> Customer Help | drawww</title>
+            <meta name="description" content="Customer Help page" />
+            <link rel="canonical" href={window.location.href} />
+         </Helmet>
          <NavigationBar />
          <div className="hero-container" style={{ padding: 20, marginBottom: 20, height: '20%', backgroundColor: 'black', color: 'white' }}>
             <p>Drawww aims to provide the best customer experience in eCommerce.</p>
