@@ -27,7 +27,7 @@ const CustomerService = () => {
          </Helmet>
          <h4 style={{ marginBottom: 10 }}>Contact Customer Service</h4>
          <p style={{ marginTop: 0 }}>
-            You can contact customer service by emailing <a style={{ textDecoration: 'underline', color: 'black', fontWeight: 'bolder' }} href="mailto:idode@drawww.xyz">idode@drawww.xyz</a>.
+            You can contact customer service by emailing <a style={{ textDecoration: 'underline', color: 'black', fontWeight: 'bolder' }} href="mailto:idode@drawww.xyz">idode@drawww.xyz</a> or calling <a style={{ textDecoration: 'underline', color: 'black', fontWeight: 'bolder' }} href="tel:+12485655763">248-565-5763</a>.
          </p>
       </>
    )
